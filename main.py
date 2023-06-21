@@ -1,11 +1,39 @@
 from tkinter import *
 from tkinter import ttk
+import customtkinter
 
-# import customtkinter
+kurssit = []
+
+
+class Kurssi:
+    def __init__(self, nimi, osp, arvosana, kategoria):
+        self.nimi = nimi
+        self.osp = osp
+        self.arvosana = arvosana
+        self.kategoria = kategoria
+
+    def __str__(self):
+        return (
+            f"{self.nimi}, {self.osp} osp, arvosana {self.arvosana}, {self.kategoria}"
+        )
 
 
 def testi():
-    print("tämä on testi!")
+    kurssi = Kurssi(
+        kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
+    )
+    kurssit.append(kurssi)
+    print(kurssi)
+    kurssi_data = Label(tab2, text=kurssi.nimi)
+    kurssi_data.grid(row=0, column=1, sticky="w", pady=5, columnspan=2)
+    osp_data = Label(tab2, text=kurssi.osp)
+    osp_data.grid(row=1, column=1, sticky="w", pady=5, columnspan=2)
+    arvosana_data = Label(tab2, text=kurssi.arvosana)
+    arvosana_data.grid(row=2, column=1, sticky="w", pady=5, columnspan=2)
+    kategoria_data = Label(tab2, text=kurssi.kategoria)
+    kategoria_data.grid(row=3, column=1, sticky="w", pady=5, columnspan=2)
+    # print("tämä on testi!")
+    # print(kurssi_input.get())
 
 
 app = Tk()
@@ -25,19 +53,53 @@ tab_view.add(tab1, text="Add course")
 tab_view.add(tab2, text="View courses")
 tab_view.pack(expand=True, fill="both")
 
-tab1.grid_columnconfigure((0, 1), weight=1)
+# Add courses tab
+tab1.grid_columnconfigure((0, 1, 2), weight=1)
 # tab1.grid_rowconfigure(0, weight=1)
 
+options = ["väkivaltatutkimus", "hylje-biologia", "juuston alkeet", "pönkö"]
+clicked = StringVar()
+clicked.set("väkivaltatutkimus")
+
 # btn1 = Button(tab2, text="Kokeiles", command=testi).pack()
-teksti = Label(tab1, text="Diipa daapaa vaikka kuinka paljon")
-teksti.grid(row=0, column=0, sticky="ew")
-teksti2 = Label(tab1, text="Lisää soopaa")
-teksti2.grid(row=0, column=1, sticky="ew")
-input = Entry(tab1)
-input.grid(row=1, column=0, sticky="ew")
-btn1 = Button(tab1, text="Kokeiles", command=testi)
-btn1.grid(row=2, column=0, sticky="ew")
+kurssi_label = Label(tab1, text="Kurssin nimi")
+kurssi_label.grid(row=0, column=0, sticky="ew", pady=5)
+osp_label = Label(tab1, text="Opintopisteet")
+osp_label.grid(row=1, column=0, sticky="ew", pady=5)
+arvosana_label = Label(tab1, text="Arvosana")
+arvosana_label.grid(row=2, column=0, sticky="ew", pady=5)
+kategoria_label = Label(tab1, text="Kategoria")
+kategoria_label.grid(row=3, column=0, sticky="ew", pady=5)
+kurssi_input = Entry(tab1)
+kurssi_input.grid(row=0, column=1, sticky="ew", pady=5, columnspan=2)
+osp_input = Entry(tab1)
+osp_input.grid(row=1, column=1, sticky="ew", pady=5, columnspan=2)
+arvosana_input = Entry(tab1)
+arvosana_input.grid(row=2, column=1, sticky="ew", pady=5, columnspan=2)
+kategoria_input = OptionMenu(tab1, clicked, *options)
+kategoria_input.grid(row=3, column=1, sticky="ew", pady=5, columnspan=2)
+
+btn1 = Button(tab1, text="Lisää", command=testi)
+btn1.grid(row=4, column=1, sticky="ew")
 # btn1.place(relx=0.5, rely=0.1)
+
+# View courses tab
+tab2.grid_columnconfigure((0, 1), weight=1)
+
+kurssi_label = Label(tab2, text="Kurssin nimi:")
+kurssi_label.grid(row=0, column=0, sticky="ew", pady=5)
+
+osp_label = Label(tab2, text="Opintopisteet:")
+osp_label.grid(row=1, column=0, sticky="ew", pady=5)
+
+arvosana_label = Label(tab2, text="Arvosana:")
+arvosana_label.grid(row=2, column=0, sticky="ew", pady=5)
+
+kategoria_label = Label(tab2, text="Kategoria:")
+kategoria_label.grid(row=3, column=0, sticky="ew", pady=5)
+# if len(kurssit) > 0:
+#     kurssi_data = Label(tab2, text=kurssi.nimi)
+#     kurssi_label.grid(row=0, column=1, sticky="ew", pady=5, columnspan=2)
 
 app.mainloop()
 
