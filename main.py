@@ -2,8 +2,6 @@ from tkinter import *
 from tkinter import ttk
 import customtkinter
 
-kurssit = []
-
 
 class Kurssi:
     def __init__(self, nimi, osp, arvosana, kategoria):
@@ -18,22 +16,51 @@ class Kurssi:
         )
 
 
+# Hardcoded values for testing
+kurssiX = Kurssi("Apex-maantiede", "22", "4", "väkivaltatutkimus")
+kurssiY = Kurssi("Koistisen psyyke", "33", "5", "väkivaltatutkimus")
+kurssiZ = Kurssi("Miragen lounas", "2", "hylätty", "juuston alkeet")
+
+kurssit = [kurssiX, kurssiY, kurssiZ]
+
+
+def render_results():
+    i = 0
+    for course in kurssit:
+        # tab2.grid_columnconfigure((0, 1), weight=1)
+
+        kurssi_label = Label(tab2, text="Kurssin nimi:")
+        kurssi_label.grid(row=i, column=0, sticky="ew", pady=(5, 2))
+
+        osp_label = Label(tab2, text="Opintopisteet:")
+        osp_label.grid(row=i + 1, column=0, sticky="ew", pady=2)
+
+        arvosana_label = Label(tab2, text="Arvosana:")
+        arvosana_label.grid(row=i + 2, column=0, sticky="ew", pady=2)
+
+        kategoria_label = Label(tab2, text="Kategoria:")
+        kategoria_label.grid(row=i + 3, column=0, sticky="ew", pady=2)
+        # print(course)
+        kurssi_data = Label(tab2, text=course.nimi)
+        kurssi_data.grid(row=i, column=1, sticky="w", pady=(5, 2), columnspan=2)
+        osp_data = Label(tab2, text=course.osp)
+        osp_data.grid(row=i + 1, column=1, sticky="w", pady=2, columnspan=2)
+        arvosana_data = Label(tab2, text=course.arvosana)
+        arvosana_data.grid(row=i + 2, column=1, sticky="w", pady=2, columnspan=2)
+        kategoria_data = Label(tab2, text=course.kategoria)
+        kategoria_data.grid(row=i + 3, column=1, sticky="w", pady=2, columnspan=2)
+        i += 4
+
+
 def testi():
     kurssi = Kurssi(
         kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
     )
     kurssit.append(kurssi)
-    print(kurssi)
-    kurssi_data = Label(tab2, text=kurssi.nimi)
-    kurssi_data.grid(row=0, column=1, sticky="w", pady=5, columnspan=2)
-    osp_data = Label(tab2, text=kurssi.osp)
-    osp_data.grid(row=1, column=1, sticky="w", pady=5, columnspan=2)
-    arvosana_data = Label(tab2, text=kurssi.arvosana)
-    arvosana_data.grid(row=2, column=1, sticky="w", pady=5, columnspan=2)
-    kategoria_data = Label(tab2, text=kurssi.kategoria)
-    kategoria_data.grid(row=3, column=1, sticky="w", pady=5, columnspan=2)
-    # print("tämä on testi!")
-    # print(kurssi_input.get())
+    # print(kurssi)
+    # for x in kurssit:
+    #     print(x)
+    render_results()
 
 
 app = Tk()
@@ -86,17 +113,17 @@ btn1.grid(row=4, column=1, sticky="ew")
 # View courses tab
 tab2.grid_columnconfigure((0, 1), weight=1)
 
-kurssi_label = Label(tab2, text="Kurssin nimi:")
-kurssi_label.grid(row=0, column=0, sticky="ew", pady=5)
+# kurssi_label = Label(tab2, text="Kurssin nimi:")
+# kurssi_label.grid(row=0, column=0, sticky="ew", pady=5)
 
-osp_label = Label(tab2, text="Opintopisteet:")
-osp_label.grid(row=1, column=0, sticky="ew", pady=5)
+# osp_label = Label(tab2, text="Opintopisteet:")
+# osp_label.grid(row=1, column=0, sticky="ew", pady=5)
 
-arvosana_label = Label(tab2, text="Arvosana:")
-arvosana_label.grid(row=2, column=0, sticky="ew", pady=5)
+# arvosana_label = Label(tab2, text="Arvosana:")
+# arvosana_label.grid(row=2, column=0, sticky="ew", pady=5)
 
-kategoria_label = Label(tab2, text="Kategoria:")
-kategoria_label.grid(row=3, column=0, sticky="ew", pady=5)
+# kategoria_label = Label(tab2, text="Kategoria:")
+# kategoria_label.grid(row=3, column=0, sticky="ew", pady=5)
 # if len(kurssit) > 0:
 #     kurssi_data = Label(tab2, text=kurssi.nimi)
 #     kurssi_label.grid(row=0, column=1, sticky="ew", pady=5, columnspan=2)
