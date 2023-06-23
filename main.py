@@ -204,5 +204,6 @@ btn1.grid(row=4, column=1, sticky="ew")
 
 # View courses tab
 tab1_2.grid_columnconfigure((0, 1), weight=1)
+render_results(kurssit)
 
 app.mainloop()
