@@ -26,8 +26,8 @@ kurssit = [kurssiX, kurssiY, kurssiZ]
 
 
 # Render the contents of overall tab
-def render_results():
-    i = 0
+def render_results(kurssit):
+    i = 1
     for course in kurssit:
         # tab2.grid_columnconfigure((0, 1), weight=1)
 
@@ -62,8 +62,27 @@ def testi():
     # print(kurssi)
     # for x in kurssit:
     #     print(x)
-    render_results()
+    render_results(kurssit)
     # tab2.config(tab1_2, height=tab1_2.height)
+
+
+def updateSort():
+    # before rendering delete every row except the first one
+    for child in tab2.grid_slaves():
+        if int(child.grid_info()["row"]) >= 1:
+            # print(child.grid_info()["row"])
+            child.grid_remove()
+
+    temp = []
+    if clicked2.get() == "all":
+        render_results(kurssit)
+    else:
+        for kurssi in kurssit:
+            if kurssi.kategoria == clicked2.get():
+                temp.append(kurssi)
+            else:
+                continue
+        render_results(temp)
 
 
 # initiate the app
@@ -91,6 +110,7 @@ tab1_2.pack(fill="both", expand=1)
 
 
 tab2 = Frame(tab1_2, width=500, height=1500)
+tab2.grid_columnconfigure((0, 1, 2), weight=1)
 tab1_2.create_window((500, 500), window=tab2, anchor="nw")
 tab1_2.config(scrollregion=tab1_2.bbox("all"))
 tab1_2.config(yscrollcommand=ctk_textbox_scrollbar.set)
@@ -103,6 +123,19 @@ tab1_2.config(yscrollcommand=ctk_textbox_scrollbar.set)
 tab_view.add(tab1, text="Add course")
 tab_view.add(tab1_2, text="View courses")
 tab_view.pack(expand=True, fill="both")
+
+# sort by
+options2 = ["all", "väkivaltatutkimus", "hylje-biologia", "juuston alkeet", "pönkö"]
+clicked2 = StringVar()
+clicked2.set("all")
+
+lajittelu_label = Label(tab2, text="Sort by:")
+lajittelu_label.grid(row=0, column=0, sticky="ew", pady=(5, 2))
+lajittelu_input = OptionMenu(tab2, clicked2, *options2)
+lajittelu_input.grid(row=0, column=1, sticky="w", pady=(5, 2))
+
+btn2 = Button(tab2, text="Päivitä", command=updateSort)
+btn2.grid(row=0, column=2, sticky="w", pady=(5, 2))
 
 # Try this to identify selected tab (and make scrollbar appea only in selected tab)
 # print(tab_view.tab(tab_view.select(), "text"))
