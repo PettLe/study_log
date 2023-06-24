@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import ttk
 import customtkinter
 
+# import json
+
 
 # class for courses
 class Kurssi:
@@ -23,6 +25,16 @@ kurssiY = Kurssi("Koistisen psyyke", "33", "5", "väkivaltatutkimus")
 kurssiZ = Kurssi("Miragen lounas", "2", "hylätty", "juuston alkeet")
 
 kurssit = [kurssiX, kurssiY, kurssiZ]
+
+
+def save_data(kurssit):
+    with open("saved_data.txt", "w", encoding="utf-8") as file:
+        for kurssi in kurssit:
+            file.write(
+                f"{kurssi.nimi} {kurssi.osp} {kurssi.arvosana} {kurssi.kategoria}\n"
+            )
+    # with open("Dataset.json", "w") as file:
+    #     json.dump(kurssit, file)
 
 
 # Render the contents of overall tab
@@ -92,7 +104,11 @@ def testi():
     # print(kurssi)
     # for x in kurssit:
     #     print(x)
+    for child in tab2.grid_slaves():
+        if int(child.grid_info()["row"]) >= 1:
+            child.grid_remove()
     render_results(kurssit)
+    save_data(kurssit)
     # tab2.config(tab1_2, height=tab1_2.height)
 
 
