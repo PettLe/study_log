@@ -1,4 +1,5 @@
-Apex-maantiede 22 4 väkivaltatutkimus
-Koistisen psyyke 33 5 väkivaltatutkimus
-Miragen lounas 2 hylätty juuston alkeet
-refer 3 3 väkivaltatutkimus
+Apex-maantiede, 22, 4, väkivaltatutkimus
+Koistisen psyyke, 33, 5, väkivaltatutkimus
+Miragen lounas, 2, hylätty, juuston alkeet
+Nakkiböle, 3, 3, väkivaltatutkimus
+Tumppu, 9, 3, hylje-biologia

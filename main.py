@@ -25,25 +25,38 @@ kurssiY = Kurssi("Koistisen psyyke", "33", "5", "väkivaltatutkimus")
 kurssiZ = Kurssi("Miragen lounas", "2", "hylätty", "juuston alkeet")
 
 kurssit = [kurssiX, kurssiY, kurssiZ]
+kurssit_testi = []
 
 
 def save_data(kurssit):
     with open("saved_data.txt", "w", encoding="utf-8") as file:
         for kurssi in kurssit:
             file.write(
-                f"{kurssi.nimi} {kurssi.osp} {kurssi.arvosana} {kurssi.kategoria}\n"
+                f"{kurssi.nimi}, {kurssi.osp}, {kurssi.arvosana}, {kurssi.kategoria}\n"
             )
     # with open("Dataset.json", "w") as file:
     #     json.dump(kurssit, file)
 
 
+def fetch_saved_data():
+    with open("saved_data.txt", "r", encoding="utf-8") as file:
+        for line in file:
+            temp = line.rstrip("\n").split(", ")
+            kurssit_testi.append(Kurssi(temp[0], temp[1], temp[2], temp[3]))
+    # for x in kurssit_testi:
+    #     print(x)
+
+
 # Render the contents of overall tab
-def render_results(kurssit):
+def render_results(courses):
+    for child in tab2.grid_slaves():
+        if int(child.grid_info()["row"]) >= 1:
+            child.grid_remove()
     i = 1
     arvosana = 0
     arvosanat_lasketut = 0
     osp = 0
-    for course in kurssit:
+    for course in courses:
         osp += int(course.osp)
         try:
             arvosana += int(course.arvosana)
@@ -70,7 +83,7 @@ def render_results(kurssit):
     kategoria_label = Label(tab2, text="Kategoria:")
     kategoria_label.grid(row=i, column=3, sticky="ew", pady=2)
 
-    for course in kurssit:
+    for course in courses:
         kurssi_data = Label(tab2, text=course.nimi)
         kurssi_data.grid(row=i + 1, column=0, sticky="w", pady=(5, 2))
         osp_data = Label(tab2, text=course.osp)
@@ -96,19 +109,21 @@ def render_results(kurssit):
     arvosana_data.grid(row=i + 1, column=3, sticky="ew", pady=2)
 
 
-def testi():
+def add_course():
     kurssi = Kurssi(
         kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
     )
     kurssit.append(kurssi)
+    kurssit_testi.append(kurssi)
     # print(kurssi)
     # for x in kurssit:
     #     print(x)
+    save_data(kurssit)
     for child in tab2.grid_slaves():
         if int(child.grid_info()["row"]) >= 1:
             child.grid_remove()
-    render_results(kurssit)
-    save_data(kurssit)
+    # fetch_saved_data()
+    render_results(kurssit_testi)
     # tab2.config(tab1_2, height=tab1_2.height)
 
 
@@ -116,14 +131,13 @@ def updateSort():
     # before rendering delete every row except the first one
     for child in tab2.grid_slaves():
         if int(child.grid_info()["row"]) >= 1:
-            # print(child.grid_info()["row"])
             child.grid_remove()
 
     temp = []
     if clicked2.get() == "all":
-        render_results(kurssit)
+        render_results(kurssit_testi)
     else:
-        for kurssi in kurssit:
+        for kurssi in kurssit_testi:
             if kurssi.kategoria == clicked2.get():
                 temp.append(kurssi)
             else:
@@ -196,7 +210,7 @@ options = ["väkivaltatutkimus", "hylje-biologia", "juuston alkeet", "pönkö"]
 clicked = StringVar()
 clicked.set("väkivaltatutkimus")
 
-# btn1 = Button(tab2, text="Kokeiles", command=testi).pack()
+# btn1 = Button(tab2, text="Kokeiles", command=add_course).pack()
 kurssi_label = Label(tab1, text="Kurssin nimi")
 kurssi_label.grid(row=0, column=0, sticky="ew", pady=5)
 osp_label = Label(tab1, text="Opintopisteet")
@@ -214,12 +228,13 @@ arvosana_input.grid(row=2, column=1, sticky="ew", pady=5, columnspan=2)
 kategoria_input = OptionMenu(tab1, clicked, *options)
 kategoria_input.grid(row=3, column=1, sticky="ew", pady=5, columnspan=2)
 
-btn1 = Button(tab1, text="Lisää", command=testi)
+btn1 = Button(tab1, text="Lisää", command=add_course)
 btn1.grid(row=4, column=1, sticky="ew")
 # btn1.place(relx=0.5, rely=0.1)
 
 # View courses tab
 tab1_2.grid_columnconfigure((0, 1), weight=1)
-render_results(kurssit)
+fetch_saved_data()
+render_results(kurssit_testi)
 
 app.mainloop()
