@@ -118,7 +118,11 @@ def add_course():
     # print(kurssi)
     # for x in kurssit:
     #     print(x)
+    # Clear forms after submit
     save_data(kurssit)
+    kurssi_input.delete(0, END)
+    osp_input.delete(0, END)
+    arvosana_input.delete(0, END)
     for child in tab2.grid_slaves():
         if int(child.grid_info()["row"]) >= 1:
             child.grid_remove()
