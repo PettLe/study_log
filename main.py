@@ -12,22 +12,16 @@ conn = sqlite3.connect("course_data.db")
 c = conn.cursor()
 
 # FIRST TIME create a table
-c.execute(
-    """
-          CREATE TABLE courses (
-              name TEXT,
-              osp INTEGER,
-              grade TEXT,
-              category TEXT
-          )
-          """
-)
-
-# commit changes
-conn.commit()
-
-# Close the connection
-conn.close()
+# c.execute(
+#     """
+#           CREATE TABLE courses (
+#               name TEXT,
+#               osp INTEGER,
+#               grade TEXT,
+#               category TEXT
+#           )
+#           """
+# )
 
 
 # class for courses
@@ -57,7 +51,7 @@ kurssit_testi = []
 def save_data():
     # Insert into table
     c.execute(
-        "INSERT INTO course_date VALUES (:course_name, :osp, :grade, :category)",
+        "INSERT INTO courses VALUES (:course_name, :osp, :grade, :category)",
         {
             "course_name": kurssi_input.get(),
             "osp": osp_input.get(),
@@ -65,6 +59,12 @@ def save_data():
             "category": clicked.get(),
         },
     )
+
+    conn.commit()
+    for child in tab2.grid_slaves():
+        if int(child.grid_info()["row"]) >= 1:
+            child.grid_remove()
+    # conn.close()
     # return
     # with open("saved_data.txt", "w", encoding="utf-8") as file:
     #     for kurssi in kurssit:
@@ -76,7 +76,11 @@ def save_data():
 
 
 def fetch_saved_data():
-    return
+    c.execute("SELECT *, oid FROM courses")
+    data = c.fetchall()
+    print(data)
+    conn.commit()
+    # conn.close()
     # with open("saved_data.txt", "r", encoding="utf-8") as file:
     #     for line in file:
     #         temp = line.rstrip("\n").split(", ")
@@ -270,8 +274,11 @@ arvosana_input.grid(row=2, column=1, sticky="ew", pady=5, columnspan=2)
 kategoria_input = OptionMenu(tab1, clicked, *options)
 kategoria_input.grid(row=3, column=1, sticky="ew", pady=5, columnspan=2)
 
-btn1 = Button(tab1, text="Lisää", command=add_course)
+# Normaalisti btn1 ollut command=add_course
+btn1 = Button(tab1, text="Lisää", command=save_data)
 btn1.grid(row=4, column=1, sticky="ew")
+btnTesti = Button(tab1, text="Testaa", command=fetch_saved_data)
+btnTesti.grid(row=5, column=1, sticky="ew")
 # btn1.place(relx=0.5, rely=0.1)
 
 # View courses tab
@@ -279,4 +286,9 @@ tab1_2.grid_columnconfigure((0, 1), weight=1)
 fetch_saved_data()
 render_results(kurssit_testi)
 
+# commit changes
+# conn.commit()
+
+# # Close the connection
+# conn.close()
 app.mainloop()
