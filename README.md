@@ -7,3 +7,4 @@ Attempt to branch out technology-wise instead of doing everything from the web d
 - Python
 - Tkinter
 - Customtkinter
+- SQLite3
