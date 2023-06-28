@@ -1,8 +1,33 @@
 from tkinter import *
 from tkinter import ttk
 import customtkinter
+import sqlite3
 
 # import json
+
+# Establish db connection or create new
+conn = sqlite3.connect("course_data.db")
+
+# create cursor
+c = conn.cursor()
+
+# FIRST TIME create a table
+c.execute(
+    """
+          CREATE TABLE courses (
+              name TEXT,
+              osp INTEGER,
+              grade TEXT,
+              category TEXT
+          )
+          """
+)
+
+# commit changes
+conn.commit()
+
+# Close the connection
+conn.close()
 
 
 # class for courses
@@ -28,21 +53,34 @@ kurssit = [kurssiX, kurssiY, kurssiZ]
 kurssit_testi = []
 
 
-def save_data(kurssit):
-    with open("saved_data.txt", "w", encoding="utf-8") as file:
-        for kurssi in kurssit:
-            file.write(
-                f"{kurssi.nimi}, {kurssi.osp}, {kurssi.arvosana}, {kurssi.kategoria}\n"
-            )
+# kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
+def save_data():
+    # Insert into table
+    c.execute(
+        "INSERT INTO course_date VALUES (:course_name, :osp, :grade, :category)",
+        {
+            "course_name": kurssi_input.get(),
+            "osp": osp_input.get(),
+            "grade": arvosana_input.get(),
+            "category": clicked.get(),
+        },
+    )
+    # return
+    # with open("saved_data.txt", "w", encoding="utf-8") as file:
+    #     for kurssi in kurssit:
+    #         file.write(
+    #             f"{kurssi.nimi}, {kurssi.osp}, {kurssi.arvosana}, {kurssi.kategoria}\n"
+    #         )
     # with open("Dataset.json", "w") as file:
     #     json.dump(kurssit, file)
 
 
 def fetch_saved_data():
-    with open("saved_data.txt", "r", encoding="utf-8") as file:
-        for line in file:
-            temp = line.rstrip("\n").split(", ")
-            kurssit_testi.append(Kurssi(temp[0], temp[1], temp[2], temp[3]))
+    return
+    # with open("saved_data.txt", "r", encoding="utf-8") as file:
+    #     for line in file:
+    #         temp = line.rstrip("\n").split(", ")
+    #         kurssit_testi.append(Kurssi(temp[0], temp[1], temp[2], temp[3]))
     # for x in kurssit_testi:
     #     print(x)
 
