@@ -81,6 +81,12 @@ def fetch_saved_data():
     # conn.close()
 
 
+def delete_course():
+    c.execute("SELECT oid FROM courses")
+    data = c.fetchall()
+    print(data)
+
+
 # Render the contents of overall tab
 def render_results(courses):
     # courses = fetch_saved_data()
@@ -126,6 +132,10 @@ def render_results(courses):
         kategoria_data = Label(tab2, text=course[3])
         kategoria_data.grid(row=i + 1, column=3, sticky="w", pady=2)
 
+        # Delete button
+        deleteBtn = Button(tab2, text="Del", command=delete_course)
+        deleteBtn.grid(row=i + 1, column=4, sticky="w", pady=(5, 2))
+
         i += 1
     osp_label = Label(tab2, text="Osp yht:", font=("Helvetica", 10, "bold"))
     osp_label.grid(row=i + 1, column=0, sticky="ew", pady=2)
@@ -140,28 +150,6 @@ def render_results(courses):
         arvosana = "-"
     arvosana_data = Label(tab2, text=(arvosana), font=("Helvetica", 10, "bold"))
     arvosana_data.grid(row=i + 1, column=3, sticky="ew", pady=2)
-
-
-# def add_course():
-#     kurssi = Kurssi(
-#         kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
-#     )
-#     kurssit.append(kurssi)
-#     kurssit_testi.append(kurssi)
-#     # print(kurssi)
-#     # for x in kurssit:
-#     #     print(x)
-#     # Clear forms after submit
-#     save_data(kurssit)
-#     kurssi_input.delete(0, END)
-#     osp_input.delete(0, END)
-#     arvosana_input.delete(0, END)
-#     for child in tab2.grid_slaves():
-#         if int(child.grid_info()["row"]) >= 1:
-#             child.grid_remove()
-#     # fetch_saved_data()
-#     render_results(fetch_saved_data())
-#     # tab2.config(tab1_2, height=tab1_2.height)
 
 
 def updateSort():
@@ -235,7 +223,7 @@ lajittelu_input.grid(row=0, column=1, sticky="w", pady=(5, 2), columnspan=2)
 btn2 = Button(tab2, text="Päivitä", command=updateSort)
 btn2.grid(row=0, column=3, sticky="w", pady=(5, 2))
 
-# Try this to identify selected tab (and make scrollbar appea only in selected tab)
+# Try this to identify selected tab (and make scrollbar appear only in selected tab)
 # print(tab_view.tab(tab_view.select(), "text"))
 
 
@@ -275,7 +263,7 @@ btnTesti.grid(row=5, column=1, sticky="ew")
 
 # View courses tab
 tab1_2.grid_columnconfigure((0, 1), weight=1)
-fetch_saved_data()
+# fetch_saved_data()
 render_results(fetch_saved_data())
 
 # commit changes
