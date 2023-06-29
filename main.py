@@ -75,7 +75,6 @@ def fetch_saved_data():
     c.execute("SELECT *, oid FROM courses")
     data = c.fetchall()
     print(data)
-    # c.execute("DELETE FROM courses WHERE oid = 1")
     conn.commit()
     return data
     # conn.close()
@@ -85,12 +84,11 @@ def delete_course(item):
     c.execute(f"SELECT name FROM courses WHERE oid = {item}")
     data = c.fetchall()
     print(data)
-    # print(m)
+    # c.execute("DELETE FROM courses WHERE oid = 1")
 
 
 # Render the contents of overall tab
 def render_results(courses):
-    # courses = fetch_saved_data()
     for child in tab2.grid_slaves():
         if int(child.grid_info()["row"]) >= 1:
             child.grid_remove()
