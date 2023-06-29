@@ -81,10 +81,11 @@ def fetch_saved_data():
     # conn.close()
 
 
-def delete_course():
-    c.execute("SELECT oid FROM courses")
+def delete_course(item):
+    c.execute(f"SELECT name FROM courses WHERE oid = {item}")
     data = c.fetchall()
     print(data)
+    # print(m)
 
 
 # Render the contents of overall tab
@@ -133,7 +134,11 @@ def render_results(courses):
         kategoria_data.grid(row=i + 1, column=3, sticky="w", pady=2)
 
         # Delete button
-        deleteBtn = Button(tab2, text="Del", command=delete_course)
+        deleteBtn = Button(
+            tab2,
+            text="Del",
+            command=lambda id=course[4]: delete_course(id),
+        )
         deleteBtn.grid(row=i + 1, column=4, sticky="w", pady=(5, 2))
 
         i += 1
