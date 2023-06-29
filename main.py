@@ -64,33 +64,26 @@ def save_data():
     for child in tab2.grid_slaves():
         if int(child.grid_info()["row"]) >= 1:
             child.grid_remove()
+    kurssi_input.delete(0, END)
+    osp_input.delete(0, END)
+    arvosana_input.delete(0, END)
+    render_results(fetch_saved_data())
     # conn.close()
-    # return
-    # with open("saved_data.txt", "w", encoding="utf-8") as file:
-    #     for kurssi in kurssit:
-    #         file.write(
-    #             f"{kurssi.nimi}, {kurssi.osp}, {kurssi.arvosana}, {kurssi.kategoria}\n"
-    #         )
-    # with open("Dataset.json", "w") as file:
-    #     json.dump(kurssit, file)
 
 
 def fetch_saved_data():
     c.execute("SELECT *, oid FROM courses")
     data = c.fetchall()
     print(data)
+    # c.execute("DELETE FROM courses WHERE oid = 1")
     conn.commit()
+    return data
     # conn.close()
-    # with open("saved_data.txt", "r", encoding="utf-8") as file:
-    #     for line in file:
-    #         temp = line.rstrip("\n").split(", ")
-    #         kurssit_testi.append(Kurssi(temp[0], temp[1], temp[2], temp[3]))
-    # for x in kurssit_testi:
-    #     print(x)
 
 
 # Render the contents of overall tab
 def render_results(courses):
+    # courses = fetch_saved_data()
     for child in tab2.grid_slaves():
         if int(child.grid_info()["row"]) >= 1:
             child.grid_remove()
@@ -99,9 +92,9 @@ def render_results(courses):
     arvosanat_lasketut = 0
     osp = 0
     for course in courses:
-        osp += int(course.osp)
+        osp += int(course[1])
         try:
-            arvosana += int(course.arvosana)
+            arvosana += int(course[2])
             arvosanat_lasketut += 1
         except:
             continue
@@ -109,8 +102,6 @@ def render_results(courses):
         arvosana = "-"
     else:
         arvosana = arvosana / arvosanat_lasketut
-    # arvosana = arvosana / arvosanat_lasketut
-    # print(arvosana)
 
     # Render labels for each category
     kurssi_label = Label(tab2, text="Kurssin nimi:")
@@ -126,13 +117,13 @@ def render_results(courses):
     kategoria_label.grid(row=i, column=3, sticky="ew", pady=2)
 
     for course in courses:
-        kurssi_data = Label(tab2, text=course.nimi)
+        kurssi_data = Label(tab2, text=course[0])
         kurssi_data.grid(row=i + 1, column=0, sticky="w", pady=(5, 2))
-        osp_data = Label(tab2, text=course.osp)
+        osp_data = Label(tab2, text=course[1])
         osp_data.grid(row=i + 1, column=1, sticky="ew", pady=2)
-        arvosana_data = Label(tab2, text=course.arvosana)
+        arvosana_data = Label(tab2, text=course[2])
         arvosana_data.grid(row=i + 1, column=2, sticky="ew", pady=2)
-        kategoria_data = Label(tab2, text=course.kategoria)
+        kategoria_data = Label(tab2, text=course[3])
         kategoria_data.grid(row=i + 1, column=3, sticky="w", pady=2)
 
         i += 1
@@ -151,26 +142,26 @@ def render_results(courses):
     arvosana_data.grid(row=i + 1, column=3, sticky="ew", pady=2)
 
 
-def add_course():
-    kurssi = Kurssi(
-        kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
-    )
-    kurssit.append(kurssi)
-    kurssit_testi.append(kurssi)
-    # print(kurssi)
-    # for x in kurssit:
-    #     print(x)
-    # Clear forms after submit
-    save_data(kurssit)
-    kurssi_input.delete(0, END)
-    osp_input.delete(0, END)
-    arvosana_input.delete(0, END)
-    for child in tab2.grid_slaves():
-        if int(child.grid_info()["row"]) >= 1:
-            child.grid_remove()
-    # fetch_saved_data()
-    render_results(kurssit_testi)
-    # tab2.config(tab1_2, height=tab1_2.height)
+# def add_course():
+#     kurssi = Kurssi(
+#         kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
+#     )
+#     kurssit.append(kurssi)
+#     kurssit_testi.append(kurssi)
+#     # print(kurssi)
+#     # for x in kurssit:
+#     #     print(x)
+#     # Clear forms after submit
+#     save_data(kurssit)
+#     kurssi_input.delete(0, END)
+#     osp_input.delete(0, END)
+#     arvosana_input.delete(0, END)
+#     for child in tab2.grid_slaves():
+#         if int(child.grid_info()["row"]) >= 1:
+#             child.grid_remove()
+#     # fetch_saved_data()
+#     render_results(fetch_saved_data())
+#     # tab2.config(tab1_2, height=tab1_2.height)
 
 
 def updateSort():
@@ -180,12 +171,13 @@ def updateSort():
             child.grid_remove()
 
     temp = []
+    data = fetch_saved_data()
     if clicked2.get() == "all":
-        render_results(kurssit_testi)
+        render_results(fetch_saved_data())
     else:
-        for kurssi in kurssit_testi:
-            if kurssi.kategoria == clicked2.get():
-                temp.append(kurssi)
+        for course in data:
+            if course[3] == clicked2.get():
+                temp.append(course)
             else:
                 continue
         render_results(temp)
@@ -284,7 +276,7 @@ btnTesti.grid(row=5, column=1, sticky="ew")
 # View courses tab
 tab1_2.grid_columnconfigure((0, 1), weight=1)
 fetch_saved_data()
-render_results(kurssit_testi)
+render_results(fetch_saved_data())
 
 # commit changes
 # conn.commit()
