@@ -211,10 +211,17 @@ def render_results(courses):
             # print(record)
             c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
             tieto = c.fetchall()
-            print(tieto)
+            # print(tree.selection())
+            # print(tieto)
             # print(record[0])
             # global selected
             # selected = record
+        deleteBtn = Button(
+            tab2,
+            text="Del",
+            command=lambda id=tieto: delete_course(id),
+        )
+        deleteBtn.grid(row=1, column=0, sticky="w", pady=(5, 2))
 
     tree.bind("<<TreeviewSelect>>", item_selected)
 
@@ -225,12 +232,8 @@ def render_results(courses):
     tree.configure(yscroll=scrollbar.set)
     scrollbar.grid(row=0, column=1, sticky="ns")
 
-    #     # # Delete button
-    deleteBtn = Button(
-        tab2,
-        text="Del",
-        command=lambda id="selected": delete_course(id),
-    )
+    # # Delete button
+    deleteBtn = Button(tab2, text="Del")
     deleteBtn.grid(row=1, column=0, sticky="w", pady=(5, 2))
 
 
