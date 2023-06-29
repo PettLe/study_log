@@ -46,6 +46,9 @@ kurssiZ = Kurssi("Miragen lounas", "2", "hylätty", "juuston alkeet")
 kurssit = [kurssiX, kurssiY, kurssiZ]
 kurssit_testi = []
 
+# for dynamically changing the frame height
+frame_height = 500
+
 
 # kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
 def save_data():
@@ -89,7 +92,7 @@ def delete_course(item):
 
 # Render the contents of overall tab
 def render_results(courses):
-    for child in tab2.grid_slaves():
+    for child in tab1_2.grid_slaves():
         if int(child.grid_info()["row"]) >= 1:
             child.grid_remove()
     i = 1
@@ -154,6 +157,10 @@ def render_results(courses):
     arvosana_data = Label(tab2, text=(arvosana), font=("Helvetica", 10, "bold"))
     arvosana_data.grid(row=i + 1, column=3, sticky="ew", pady=2)
 
+    for x in range(100):
+        testaus = Label(tab2, text=x)
+        testaus.grid(row=2 + i + x, column=0, sticky="ew", pady=(5, 2))
+
 
 def updateSort():
     # before rendering delete every row except the first one
@@ -180,29 +187,38 @@ app.title("Study log")
 app.geometry("500x500")
 
 tab_view = ttk.Notebook(app)
-tab_view.pack()
+# tab_view.pack()
 
 tab1 = Frame(tab_view, width=500, height=500)
-tab1_2 = Canvas(tab_view, width=500, height=500, scrollregion=(0, 0, 500, 450))
+# tab1_2 = Canvas(tab_view, width=500, height=500, scrollregion=(0, 0, 500, 450))
+tab1_2 = Canvas(tab_view)
 
-ctk_textbox_scrollbar = customtkinter.CTkScrollbar(tab_view, command=tab1_2.yview)
-ctk_textbox_scrollbar.pack(fill="y", side=RIGHT)
+# ctk_textbox_scrollbar = customtkinter.CTkScrollbar(tab_view, command=tab1_2.yview)
+# ctk_textbox_scrollbar.pack(fill="y", side=RIGHT)
 
 tab1.pack(fill="both", expand=1)
-tab1_2.pack(fill="both", expand=1)
+# tab1_2.pack(fill="both", expand=1)
 
 # Scrollbar
 # vbar = Scrollbar(tab_view, orient=VERTICAL, command=tab1_2.yview)
 # vbar.pack(side=RIGHT, fill=Y)
 # vbar.grid(row=0, column=1, sticky="ns")
 # tab1_2.config(yscrollcommand=vbar.set)
+yscrollbar = Scrollbar(tab1_2, orient="vertical", command=tab1_2.yview)
+yscrollbar.pack(side=RIGHT, fill="y")
 
 
-tab2 = Frame(tab1_2, width=500, height=1500)
+tab2 = Frame(tab1_2, width=500, height=frame_height)
 tab2.grid_columnconfigure((0, 1, 2, 3), weight=1)
+tab1_2.config(yscrollcommand=yscrollbar.set)
+
+# tab1_2.bind("<Configure>", lambda e: tab1_2.configure(scrollregion=tab1_2.bbox("all")))
+
 tab1_2.create_window((500, 500), window=tab2, anchor="nw")
 tab1_2.config(scrollregion=tab1_2.bbox("all"))
-tab1_2.config(yscrollcommand=ctk_textbox_scrollbar.set)
+
+
+# tab1_2.config(yscrollcommand=ctk_textbox_scrollbar.set)
 
 # ctk_textbox_scrollbar = customtkinter.CTkScrollbar(tab1_2, command=tab1_2.yview)
 # ctk_textbox_scrollbar.pack(side=RIGHT)
