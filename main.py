@@ -183,10 +183,6 @@ def render_results(courses):
     # # Configure the scrollbar
     # scrollbar.config(command=listbox.yview)
 
-    # Testaus useilla arvoilla
-    # for x in range(100):
-    #     testaus = Label(tab2, text=x)
-    #     testaus.grid(row=2 + i + x, column=0, sticky="ew", pady=(5, 2))
     columns = ("course_name", "osp", "grade", "category")
 
     tree = ttk.Treeview(tab2, columns=columns, show="headings")
@@ -194,20 +190,16 @@ def render_results(courses):
     tree.column("osp", width=100, anchor=W)
     tree.column("grade", width=100, anchor=CENTER)
     tree.column("category", width=150, anchor=CENTER)
+
     # define headings
     tree.heading("course_name", text="Kurssin nimi")
     tree.heading("osp", text="Osp.")
     tree.heading("grade", text="Arvosana")
     tree.heading("category", text="Kategoria")
 
-    # generate sample data
-    # contacts = []
-    # for n in range(1, 100):
-    #     contacts.append((f"first {n}", f"last {n}", f"email{n}@example.com"))
-
     # add data to the treeview
     for course in courses:
-        temp = (course[0], course[1], course[2], course[3])
+        temp = (course[0], course[1], course[2], course[3], course[4])
         tree.insert("", END, values=temp)
 
     def item_selected(event):
@@ -216,7 +208,11 @@ def render_results(courses):
             record = item["values"]
             # show a message
             # showinfo(title="Information", message=",".join(record))
-            print(record)
+            # print(record)
+            c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
+            tieto = c.fetchall()
+            print(tieto)
+            # print(record[0])
             # global selected
             # selected = record
 
