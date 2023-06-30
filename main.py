@@ -61,9 +61,9 @@ def save_data():
     )
 
     conn.commit()
-    for child in tab2.grid_slaves():
-        if int(child.grid_info()["row"]) >= 1:
-            child.grid_remove()
+    # for child in tab2.grid_slaves():
+    #     if int(child.grid_info()["row"]) >= 1:
+    #         child.grid_remove()
     kurssi_input.delete(0, END)
     osp_input.delete(0, END)
     arvosana_input.delete(0, END)
@@ -81,13 +81,15 @@ def fetch_saved_data():
 
 
 def delete_course(item):
-    # c.execute(f"SELECT name FROM courses WHERE oid = {item}")
+    # print(item[0][4])
+    c.execute(f"DELETE FROM courses WHERE oid = {item[0][4]}")
     # data = c.fetchall()
+    conn.commit()
     # print(data)
-
+    updateSort()
     # c.execute("DELETE FROM courses WHERE oid = 1")
 
-    print(item)
+    # print(item)
 
 
 # Render the contents of overall tab
@@ -196,7 +198,7 @@ def render_results(courses):
             text="Del",
             command=lambda id=tieto: delete_course(id),
         )
-        deleteBtn.grid(row=0, column=0, sticky="e", pady=(5, 2))
+        deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
 
     tree.bind("<<TreeviewSelect>>", item_selected)
 
