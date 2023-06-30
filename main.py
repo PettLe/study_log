@@ -110,6 +110,7 @@ def render_results(courses):
         arvosana = "-"
     else:
         arvosana = arvosana / arvosanat_lasketut
+        arvosana = round(arvosana, 1)
 
     # Render labels for each category
     # kurssi_label = Label(tab2, text="Kurssin nimi:")
@@ -157,32 +158,6 @@ def render_results(courses):
     # arvosana_data = Label(tab2, text=(arvosana), font=("Helvetica", 10, "bold"))
     # arvosana_data.grid(row=i + 1, column=3, sticky="ew", pady=2)
 
-    # s = Scrollbar()
-
-    # # Create a horizontal scrollbar
-    # scrollbar = ttk.Scrollbar(tab2, orient="vertical")
-    # # scrollbar.pack(side=RIGHT, fill=BOTH)
-    # scrollbar.grid(row=1, column=1)
-
-    # # Add a Listbox Widget
-    # listbox = Listbox(tab2, width=500, font=("Helvetica 10 bold"))
-    # listbox.grid_columnconfigure((0, 1, 2, 3), weight=1)
-    # listbox.pack(side=LEFT, fill=BOTH)
-    # listbox.grid(row=1, column=0, sticky="ew", pady=2)
-
-    # for course in courses:
-    #     temp = course[0] + " " + str(course[1]) + " " + str(course[2]) + " " + course[3]
-    #     listbox.insert(END, temp)
-
-    # Add values to the Listbox
-    # for values in range(1, 101):
-    #     listbox.insert(END, values)
-
-    # listbox.config(yscrollcommand=scrollbar.set)
-
-    # # Configure the scrollbar
-    # scrollbar.config(command=listbox.yview)
-
     columns = ("course_name", "osp", "grade", "category")
 
     tree = ttk.Treeview(tab2, columns=columns, show="headings")
@@ -217,11 +192,11 @@ def render_results(courses):
             # global selected
             # selected = record
         deleteBtn = Button(
-            tab2,
+            controlFrame,
             text="Del",
             command=lambda id=tieto: delete_course(id),
         )
-        deleteBtn.grid(row=1, column=0, sticky="w", pady=(5, 2))
+        deleteBtn.grid(row=0, column=0, sticky="e", pady=(5, 2))
 
     tree.bind("<<TreeviewSelect>>", item_selected)
 
@@ -233,15 +208,24 @@ def render_results(courses):
     scrollbar.grid(row=0, column=1, sticky="ns")
 
     # # Delete button
-    deleteBtn = Button(tab2, text="Del")
-    deleteBtn.grid(row=1, column=0, sticky="w", pady=(5, 2))
+    deleteBtn = Button(controlFrame, text="Del")
+    deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
+
+    arvosana_label = Label(
+        controlFrame, text="Keskiarvo:", font=("Helvetica", 10, "bold")
+    )
+    arvosana_label.grid(row=0, column=1, sticky="ew", pady=2)
+
+    arvosana_data = Label(controlFrame, text=(arvosana), font=("Helvetica", 10, "bold"))
+    arvosana_data.grid(row=1, column=1, sticky="ew", pady=2)
 
 
 def updateSort():
+    print(clicked2.get())
     # before rendering delete every row except the first one
-    for child in tab2.grid_slaves():
-        if int(child.grid_info()["row"]) >= 1:
-            child.grid_remove()
+    # for child in tab2.grid_slaves():
+    #     if int(child.grid_info()["row"]) >= 1:
+    #         child.grid_remove()
 
     temp = []
     data = fetch_saved_data()
@@ -302,6 +286,21 @@ tab2.pack(fill="both", expand=1)
 # ctk_textbox_scrollbar.pack(side=RIGHT)
 
 # connect textbox scroll event to CTk scrollbar
+controlFrame = Frame(tab2)
+controlFrame.grid(row=1, column=0, columnspan=2, sticky="ew")
+controlFrame.grid_columnconfigure((0, 1, 2, 3), weight=1)
+
+
+# Sorting
+options2 = ["all", "väkivaltatutkimus", "hylje-biologia", "juuston alkeet", "pönkö"]
+clicked2 = StringVar()
+clicked2.set("all")
+
+lajittelu_input = OptionMenu(controlFrame, clicked2, *options2)
+lajittelu_input.grid(row=0, column=2, sticky="ew", pady=(5, 2), columnspan=2)
+
+btn2 = Button(controlFrame, text="Lajittele", command=updateSort)
+btn2.grid(row=1, column=2, sticky="ew", pady=(5, 2))
 
 tab_view.add(tab1, text="Add course")
 tab_view.add(tab2, text="View courses")
@@ -311,14 +310,14 @@ tab_view.pack(expand=True, fill="both")
 # sort by
 # sortFrame = Frame(tab2, width=500)
 # sortFrame.grid(row=0, column=0, columnspan=4)
-# sortFrame.columnconfigure((0, 1, 2, 4), weight=1)
+# # sortFrame.columnconfigure((0, 1, 2, 4), weight=1)
 # options2 = ["all", "väkivaltatutkimus", "hylje-biologia", "juuston alkeet", "pönkö"]
 # clicked2 = StringVar()
 # clicked2.set("all")
 
 # lajittelu_label = Label(sortFrame, text="Sort by:")
 # lajittelu_label.grid(row=0, column=0, sticky="w", pady=(5, 2))
-# lajittelu_input = OptionMenu(sortFrame, clicked2, *options2)
+# lajittelu_input = OptionMenu(controlFrame, clicked2, *options2)
 # lajittelu_input.grid(row=0, column=1, sticky="w", pady=(5, 2), columnspan=2)
 
 # btn2 = Button(sortFrame, text="Päivitä", command=updateSort)
