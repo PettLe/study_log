@@ -3,8 +3,6 @@ from tkinter import ttk
 import customtkinter
 import sqlite3
 
-# import json
-
 # Establish db connection or create new
 conn = sqlite3.connect("course_data.db")
 
@@ -22,6 +20,11 @@ c = conn.cursor()
 #           )
 #           """
 # )
+
+# If need to clear widgets from overall:
+# for child in tab2.grid_slaves():
+#     if int(child.grid_info()["row"]) >= 1:
+#         child.grid_remove()
 
 
 # class for courses
@@ -43,9 +46,6 @@ kurssiX = Kurssi("Apex-maantiede", "22", "4", "väkivaltatutkimus")
 kurssiY = Kurssi("Koistisen psyyke", "33", "5", "väkivaltatutkimus")
 kurssiZ = Kurssi("Miragen lounas", "2", "hylätty", "juuston alkeet")
 
-kurssit = [kurssiX, kurssiY, kurssiZ]
-kurssit_testi = []
-
 
 # kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
 def save_data():
@@ -61,9 +61,6 @@ def save_data():
     )
 
     conn.commit()
-    # for child in tab2.grid_slaves():
-    #     if int(child.grid_info()["row"]) >= 1:
-    #         child.grid_remove()
     kurssi_input.delete(0, END)
     osp_input.delete(0, END)
     arvosana_input.delete(0, END)
@@ -74,30 +71,20 @@ def save_data():
 def fetch_saved_data():
     c.execute("SELECT *, oid FROM courses")
     data = c.fetchall()
-    print(data)
+    # print(data)
     conn.commit()
     return data
-    # conn.close()
 
 
 def delete_course(item):
-    # print(item[0][4])
+    # SQL command to delete based on oid. Then update
     c.execute(f"DELETE FROM courses WHERE oid = {item[0][4]}")
-    # data = c.fetchall()
     conn.commit()
-    # print(data)
     updateSort()
-    # c.execute("DELETE FROM courses WHERE oid = 1")
-
-    # print(item)
 
 
 # Render the contents of overall tab
 def render_results(courses):
-    # for child in tab2.grid_slaves():
-    #     if int(child.grid_info()["row"]) >= 1:
-    #         child.grid_remove()
-    i = 1
     arvosana = 0
     arvosanat_lasketut = 0
     osp = 0
@@ -114,51 +101,8 @@ def render_results(courses):
         arvosana = arvosana / arvosanat_lasketut
         arvosana = round(arvosana, 1)
 
-    # Render labels for each category
-    # kurssi_label = Label(tab2, text="Kurssin nimi:")
-    # kurssi_label.grid(row=i, column=0, sticky="ew", pady=(5, 2))
-
-    # osp_label = Label(tab2, text="Opintopisteet:")
-    # osp_label.grid(row=i, column=1, sticky="ew", pady=2)
-
-    # arvosana_label = Label(tab2, text="Arvosana:")
-    # arvosana_label.grid(row=i, column=2, sticky="ew", pady=2)
-
-    # kategoria_label = Label(tab2, text="Kategoria:")
-    # kategoria_label.grid(row=i, column=3, sticky="ew", pady=2)
-
-    # for course in courses:
-    #     kurssi_data = Label(tab2, text=course[0])
-    #     kurssi_data.grid(row=i + 1, column=0, sticky="w", pady=(5, 2))
-    #     osp_data = Label(tab2, text=course[1])
-    #     osp_data.grid(row=i + 1, column=1, sticky="ew", pady=2)
-    #     arvosana_data = Label(tab2, text=course[2])
-    #     arvosana_data.grid(row=i + 1, column=2, sticky="ew", pady=2)
-    #     kategoria_data = Label(tab2, text=course[3])
-    #     kategoria_data.grid(row=i + 1, column=3, sticky="w", pady=2)
-
-    #     # # Delete button
-    #     # deleteBtn = Button(
-    #     #     tab2,
-    #     #     text="Del",
-    #     #     command=lambda id=course[4]: delete_course(id),
-    #     # )
-    #     # deleteBtn.grid(row=i + 1, column=4, sticky="w", pady=(5, 2))
-
-    #     i += 1
-    # osp_label = Label(tab2, text="Osp yht:", font=("Helvetica", 10, "bold"))
-    # osp_label.grid(row=i + 1, column=0, sticky="ew", pady=2)
-
-    # osp_data = Label(tab2, text=osp, font=("Helvetica", 10, "bold"))
-    # osp_data.grid(row=i + 1, column=1, sticky="ew", pady=2)
-
-    # arvosana_label = Label(tab2, text="Keskiarvo:", font=("Helvetica", 10, "bold"))
-    # arvosana_label.grid(row=i + 1, column=2, sticky="ew", pady=2)
-
     if arvosana == 0:
         arvosana = "-"
-    # arvosana_data = Label(tab2, text=(arvosana), font=("Helvetica", 10, "bold"))
-    # arvosana_data.grid(row=i + 1, column=3, sticky="ew", pady=2)
 
     columns = ("course_name", "osp", "grade", "category")
 
@@ -183,16 +127,8 @@ def render_results(courses):
         for selected_item in tree.selection():
             item = tree.item(selected_item)
             record = item["values"]
-            # show a message
-            # showinfo(title="Information", message=",".join(record))
-            # print(record)
             c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
             tieto = c.fetchall()
-            # print(tree.selection())
-            # print(tieto)
-            # print(record[0])
-            # global selected
-            # selected = record
         deleteBtn = Button(
             controlFrame,
             text="Del",
@@ -209,7 +145,7 @@ def render_results(courses):
     tree.configure(yscroll=scrollbar.set)
     scrollbar.grid(row=0, column=1, sticky="ns")
 
-    # # Delete button
+    # EMPTY delete button to hide mistakes, oops
     deleteBtn = Button(controlFrame, text="Del")
     deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
 
@@ -223,12 +159,6 @@ def render_results(courses):
 
 
 def updateSort():
-    print(clicked2.get())
-    # before rendering delete every row except the first one
-    # for child in tab2.grid_slaves():
-    #     if int(child.grid_info()["row"]) >= 1:
-    #         child.grid_remove()
-
     temp = []
     data = fetch_saved_data()
     if clicked2.get() == "all":
@@ -248,46 +178,20 @@ app.title("Study log")
 app.geometry("500x500")
 
 tab_view = ttk.Notebook(app)
-# tab_view.pack()
+tab_view.pack()
 
+# Add courses tab
 tab1 = Frame(tab_view, width=500, height=500)
-# tab1_2 = Canvas(tab_view, width=500, height=500)
-# tab1_2 = Canvas(tab_view)
-
-# ctk_textbox_scrollbar = customtkinter.CTkScrollbar(tab_view, command=tab1_2.yview)
-# ctk_textbox_scrollbar.pack(fill="y", side=RIGHT)
-
 tab1.pack(fill="both", expand=1)
-# tab1_2.pack(fill="both", expand=1)
+tab1.grid_columnconfigure((0, 1, 2), weight=1)
 
-# Scrollbar
-# vbar = Scrollbar(tab_view, orient=VERTICAL, command=tab1_2.yview)
-# vbar.pack(side=RIGHT, fill=Y)
-# vbar.grid(row=0, column=1, sticky="ns")
-# tab1_2.config(yscrollcommand=vbar.set)
-# yscrollbar = Scrollbar(tab1_2, orient="vertical", command=tab1_2.yview)
-# yscrollbar.pack(side=RIGHT, fill="y")
-
-
+# View courses tab
 tab2 = Frame(tab_view, width=500, height=500)
 tab2.pack(fill="both", expand=1)
-# tab2.grid_columnconfigure((0, 1, 2, 3), weight=1)
-# tab2.grid_rowconfigure((0, 1), weight=1)
-# tab2.grid_rowconfigure((0, 1, 2, 3, 4), weight=1)
-# tab1_2.config(yscrollcommand=yscrollbar.set)
-
-# tab1_2.bind("<Configure>", lambda e: tab1_2.configure(scrollregion=tab1_2.bbox("all")))
-
-# tab1_2.create_window((500, 500), window=tab2, anchor="nw")
-# tab1_2.config(scrollregion=tab1_2.bbox("all"))
+tab2.grid_columnconfigure((0, 1), weight=1)
 
 
-# tab1_2.config(yscrollcommand=ctk_textbox_scrollbar.set)
-
-# ctk_textbox_scrollbar = customtkinter.CTkScrollbar(tab1_2, command=tab1_2.yview)
-# ctk_textbox_scrollbar.pack(side=RIGHT)
-
-# connect textbox scroll event to CTk scrollbar
+# Frame for courses tabs' control widgets
 controlFrame = Frame(tab2)
 controlFrame.grid(row=1, column=0, columnspan=2, sticky="ew")
 controlFrame.grid_columnconfigure((0, 1, 2, 3), weight=1)
@@ -308,72 +212,11 @@ tab_view.add(tab1, text="Add course")
 tab_view.add(tab2, text="View courses")
 tab_view.pack(expand=True, fill="both")
 
-
-# sort by
-# sortFrame = Frame(tab2, width=500)
-# sortFrame.grid(row=0, column=0, columnspan=4)
-# # sortFrame.columnconfigure((0, 1, 2, 4), weight=1)
-# options2 = ["all", "väkivaltatutkimus", "hylje-biologia", "juuston alkeet", "pönkö"]
-# clicked2 = StringVar()
-# clicked2.set("all")
-
-# lajittelu_label = Label(sortFrame, text="Sort by:")
-# lajittelu_label.grid(row=0, column=0, sticky="w", pady=(5, 2))
-# lajittelu_input = OptionMenu(controlFrame, clicked2, *options2)
-# lajittelu_input.grid(row=0, column=1, sticky="w", pady=(5, 2), columnspan=2)
-
-# btn2 = Button(sortFrame, text="Päivitä", command=updateSort)
-# btn2.grid(row=0, column=3, sticky="w", pady=(5, 2))
-
-# Delete button
-# deleteBtn = Button(
-#     sortFrame,
-#     text="Del",
-#     command=lambda id="x": delete_course(id),
-# )
-# deleteBtn.grid(row=0, column=4, sticky="w", pady=(5, 2))
-
-
-# listbox
-# listFrame = Frame(tab2, width=500)
-# listFrame.grid(row=1, column=0)
-# listFrame.columnconfigure((0, 1, 2, 4), weight=1)
-# s = Scrollbar()
-
-# Create a horizontal scrollbar
-# scrollbar = ttk.Scrollbar(listFrame, orient="vertical")
-# scrollbar.pack(side=RIGHT, fill=BOTH)
-# scrollbar.grid(row=1, column=1)
-
-# Add a Listbox Widget
-# listbox = Listbox(listFrame, width=500, font=("Helvetica 10 bold"))
-# listbox.grid_columnconfigure((0, 1, 2, 3), weight=1)
-# listbox.pack(side=LEFT, fill=BOTH)
-# listbox.grid(row=0, column=0, sticky="ew", pady=2)
-
-# Add values to the Listbox
-# for values in range(1, 101):
-#     listbox.insert(END, values)
-
-# listbox.config(yscrollcommand=scrollbar.set)
-
-# Configure the scrollbar
-# scrollbar.config(command=listbox.yview)
-
-# Try this to identify selected tab (and make scrollbar appear only in selected tab)
-# print(tab_view.tab(tab_view.select(), "text"))
-
-
-# Add courses tab
-tab1.grid_columnconfigure((0, 1, 2), weight=1)
-# tab2.grid_columnconfigure((0, 1, 2), weight=1)
-# tab1.grid_rowconfigure(0, weight=1)
-
 options = ["väkivaltatutkimus", "hylje-biologia", "juuston alkeet", "pönkö"]
 clicked = StringVar()
 clicked.set("väkivaltatutkimus")
 
-# btn1 = Button(tab2, text="Kokeiles", command=add_course).pack()
+# Widgets for add form
 kurssi_label = Label(tab1, text="Kurssin nimi")
 kurssi_label.grid(row=0, column=0, sticky="ew", pady=5)
 osp_label = Label(tab1, text="Opintopisteet")
@@ -391,21 +234,10 @@ arvosana_input.grid(row=2, column=1, sticky="ew", pady=5, columnspan=2)
 kategoria_input = OptionMenu(tab1, clicked, *options)
 kategoria_input.grid(row=3, column=1, sticky="ew", pady=5, columnspan=2)
 
-# Normaalisti btn1 ollut command=add_course
+# Save Button
 btn1 = Button(tab1, text="Lisää", command=save_data)
 btn1.grid(row=4, column=1, sticky="ew")
-btnTesti = Button(tab1, text="Testaa", command=fetch_saved_data)
-btnTesti.grid(row=5, column=1, sticky="ew")
-# btn1.place(relx=0.5, rely=0.1)
 
-# View courses tab
-tab2.grid_columnconfigure((0, 1), weight=1)
-# fetch_saved_data()
 render_results(fetch_saved_data())
 
-# commit changes
-# conn.commit()
-
-# # Close the connection
-# conn.close()
 app.mainloop()
