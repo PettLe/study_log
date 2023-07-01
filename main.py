@@ -202,7 +202,11 @@ options2 = ["all", "v√§kivaltatutkimus", "hylje-biologia", "juuston alkeet", "p√
 clicked2 = StringVar()
 clicked2.set("all")
 
+# Find the size of the longest word in optionMenu and use it as width to stop widget from resizing
+menu_width = len(max(options2, key=len))
+
 lajittelu_input = OptionMenu(controlFrame, clicked2, *options2)
+lajittelu_input.config(width=menu_width)
 lajittelu_input.grid(row=0, column=2, sticky="ew", pady=(5, 2), columnspan=2)
 
 btn2 = Button(controlFrame, text="Lajittele", command=updateSort)
