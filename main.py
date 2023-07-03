@@ -27,6 +27,11 @@ c = conn.cursor()
 #         child.grid_remove()
 
 
+# Custom system settings
+customtkinter.set_appearance_mode("dark")
+customtkinter.set_default_color_theme("dark-blue")
+
+
 # class for courses
 class Kurssi:
     def __init__(self, nimi, osp, arvosana, kategoria):
@@ -129,7 +134,7 @@ def render_results(courses):
             record = item["values"]
             c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
             tieto = c.fetchall()
-        deleteBtn = Button(
+        deleteBtn = customtkinter.CTkButton(
             controlFrame,
             text="Del",
             command=lambda id=tieto: delete_course(id),
@@ -146,26 +151,28 @@ def render_results(courses):
     scrollbar.grid(row=0, column=1, sticky="ns")
 
     # EMPTY delete button to hide mistakes, oops
-    deleteBtn = Button(controlFrame, text="Del")
+    deleteBtn = customtkinter.CTkButton(controlFrame, text="Del")
     deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
 
-    arvosana_label = Label(
+    arvosana_label = customtkinter.CTkLabel(
         controlFrame, text="Keskiarvo:", font=("Helvetica", 10, "bold")
     )
     arvosana_label.grid(row=0, column=1, sticky="ew", pady=2)
 
-    arvosana_data = Label(controlFrame, text=(arvosana), font=("Helvetica", 10, "bold"))
+    arvosana_data = customtkinter.CTkLabel(
+        controlFrame, text=(arvosana), font=("Helvetica", 10, "bold")
+    )
     arvosana_data.grid(row=1, column=1, sticky="ew", pady=2)
 
 
 def updateSort():
     temp = []
     data = fetch_saved_data()
-    if clicked2.get() == "all":
+    if lajittelu_input.get() == "all":
         render_results(fetch_saved_data())
     else:
         for course in data:
-            if course[3] == clicked2.get():
+            if course[3] == lajittelu_input.get():
                 temp.append(course)
             else:
                 continue
@@ -173,7 +180,7 @@ def updateSort():
 
 
 # initiate the app
-app = Tk()
+app = customtkinter.CTk()
 app.title("Study log")
 app.geometry("500x500")
 
@@ -181,36 +188,44 @@ tab_view = ttk.Notebook(app)
 tab_view.pack()
 
 # Add courses tab
-tab1 = Frame(tab_view, width=500, height=500)
+tab1 = customtkinter.CTkFrame(tab_view, width=500, height=500)
 tab1.pack(fill="both", expand=1)
 tab1.grid_columnconfigure((0, 1, 2), weight=1)
 
 # View courses tab
-tab2 = Frame(tab_view, width=500, height=500)
+tab2 = customtkinter.CTkFrame(tab_view, width=500, height=500)
 tab2.pack(fill="both", expand=1)
 tab2.grid_columnconfigure((0, 1), weight=1)
 
 
 # Frame for courses tabs' control widgets
-controlFrame = Frame(tab2)
+controlFrame = customtkinter.CTkFrame(tab2)
 controlFrame.grid(row=1, column=0, columnspan=2, sticky="ew")
 controlFrame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
 
 # Sorting
 options2 = ["all", "väkivaltatutkimus", "hylje-biologia", "juuston alkeet", "pönkö"]
-clicked2 = StringVar()
-clicked2.set("all")
+clicked2 = customtkinter.StringVar(value="all")
+# clicked2.set("all")
 
 # Find the size of the longest word in optionMenu and use it as width to stop widget from resizing
 menu_width = len(max(options2, key=len))
 
-lajittelu_input = OptionMenu(controlFrame, clicked2, *options2)
-lajittelu_input.config(width=menu_width)
+
+def optionmenu_callback(choice):
+    updateSort()
+    print("optionmenu dropdown clicked:", choice)
+
+
+lajittelu_input = customtkinter.CTkOptionMenu(
+    controlFrame, values=options2, command=optionmenu_callback
+)
+lajittelu_input.configure(width=menu_width)
 lajittelu_input.grid(row=0, column=2, sticky="ew", pady=(5, 2), columnspan=2)
 
-btn2 = Button(controlFrame, text="Lajittele", command=updateSort)
-btn2.grid(row=1, column=2, sticky="ew", pady=(5, 2))
+# btn2 = customtkinter.CTkButton(controlFrame, text="Lajittele", command=updateSort)
+# btn2.grid(row=1, column=2, sticky="ew", pady=(5, 2))
 
 tab_view.add(tab1, text="Add course")
 tab_view.add(tab2, text="View courses")
@@ -221,25 +236,25 @@ clicked = StringVar()
 clicked.set("väkivaltatutkimus")
 
 # Widgets for add form
-kurssi_label = Label(tab1, text="Kurssin nimi")
+kurssi_label = customtkinter.CTkLabel(tab1, text="Kurssin nimi")
 kurssi_label.grid(row=0, column=0, sticky="ew", pady=5)
-osp_label = Label(tab1, text="Opintopisteet")
+osp_label = customtkinter.CTkLabel(tab1, text="Opintopisteet")
 osp_label.grid(row=1, column=0, sticky="ew", pady=5)
-arvosana_label = Label(tab1, text="Arvosana")
+arvosana_label = customtkinter.CTkLabel(tab1, text="Arvosana")
 arvosana_label.grid(row=2, column=0, sticky="ew", pady=5)
-kategoria_label = Label(tab1, text="Kategoria")
+kategoria_label = customtkinter.CTkLabel(tab1, text="Kategoria")
 kategoria_label.grid(row=3, column=0, sticky="ew", pady=5)
-kurssi_input = Entry(tab1)
+kurssi_input = customtkinter.CTkEntry(tab1)
 kurssi_input.grid(row=0, column=1, sticky="ew", pady=5, columnspan=2)
-osp_input = Entry(tab1)
+osp_input = customtkinter.CTkEntry(tab1)
 osp_input.grid(row=1, column=1, sticky="ew", pady=5, columnspan=2)
-arvosana_input = Entry(tab1)
+arvosana_input = customtkinter.CTkEntry(tab1)
 arvosana_input.grid(row=2, column=1, sticky="ew", pady=5, columnspan=2)
 kategoria_input = OptionMenu(tab1, clicked, *options)
 kategoria_input.grid(row=3, column=1, sticky="ew", pady=5, columnspan=2)
 
 # Save Button
-btn1 = Button(tab1, text="Lisää", command=save_data)
+btn1 = customtkinter.CTkButton(tab1, text="Lisää", command=save_data)
 btn1.grid(row=4, column=1, sticky="ew")
 
 render_results(fetch_saved_data())
