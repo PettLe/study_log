@@ -182,7 +182,17 @@ def updateSort():
 # initiate the app
 app = customtkinter.CTk()
 app.title("Study log")
-app.geometry("500x500")
+
+width = 500
+height = 500
+screen_width = app.winfo_screenwidth()  # Width of the screen
+screen_height = app.winfo_screenheight()  # Height of the screen
+x = (screen_width / 2) - (width / 2)
+y = (screen_height / 2) - (height / 2)
+
+app.geometry("%dx%d+%d+%d" % (width, height, x, y))
+# app.geometry("500x500")
+# app.eval("tk::PlaceWindow . center")
 
 tab_view = customtkinter.CTkTabview(app)
 tab_view.pack()
