@@ -28,8 +28,8 @@ c = conn.cursor()
 
 
 # Custom system settings
-customtkinter.set_appearance_mode("dark")
-customtkinter.set_default_color_theme("dark-blue")
+customtkinter.set_appearance_mode("System")
+customtkinter.set_default_color_theme("green")
 
 
 # class for courses
@@ -61,7 +61,7 @@ def save_data():
             "course_name": kurssi_input.get(),
             "osp": osp_input.get(),
             "grade": arvosana_input.get(),
-            "category": clicked.get(),
+            "category": kategoria_input.get(),
         },
     )
 
@@ -184,17 +184,24 @@ app = customtkinter.CTk()
 app.title("Study log")
 app.geometry("500x500")
 
-tab_view = ttk.Notebook(app)
+tab_view = customtkinter.CTkTabview(app)
 tab_view.pack()
 
+tab1 = tab_view.add("Add course")
+tab2 = tab_view.add("View all")
+tab_view.pack(expand=True, fill="both")
+
+button_1 = customtkinter.CTkButton(tab_view.tab("Add course"))
+button_2 = customtkinter.CTkButton(tab_view.tab("View all"))
+
 # Add courses tab
-tab1 = customtkinter.CTkFrame(tab_view, width=500, height=500)
-tab1.pack(fill="both", expand=1)
+# tab1 = customtkinter.CTkFrame(tab_view, width=500, height=500)
+# tab1.pack(fill="both", expand=1)
 tab1.grid_columnconfigure((0, 1, 2), weight=1)
 
 # View courses tab
-tab2 = customtkinter.CTkFrame(tab_view, width=500, height=500)
-tab2.pack(fill="both", expand=1)
+# tab2 = customtkinter.CTkFrame(tab_view, width=500, height=500)
+# tab2.pack(fill="both", expand=1)
 tab2.grid_columnconfigure((0, 1), weight=1)
 
 
@@ -224,15 +231,8 @@ lajittelu_input = customtkinter.CTkOptionMenu(
 lajittelu_input.configure(width=menu_width)
 lajittelu_input.grid(row=0, column=2, sticky="ew", pady=(5, 2), columnspan=2)
 
-# btn2 = customtkinter.CTkButton(controlFrame, text="Lajittele", command=updateSort)
-# btn2.grid(row=1, column=2, sticky="ew", pady=(5, 2))
-
-tab_view.add(tab1, text="Add course")
-tab_view.add(tab2, text="View courses")
-tab_view.pack(expand=True, fill="both")
-
 options = ["väkivaltatutkimus", "hylje-biologia", "juuston alkeet", "pönkö"]
-clicked = StringVar()
+clicked = customtkinter.StringVar(value="väkivaltatutkimus")
 clicked.set("väkivaltatutkimus")
 
 # Widgets for add form
@@ -250,7 +250,15 @@ osp_input = customtkinter.CTkEntry(tab1)
 osp_input.grid(row=1, column=1, sticky="ew", pady=5, columnspan=2)
 arvosana_input = customtkinter.CTkEntry(tab1)
 arvosana_input.grid(row=2, column=1, sticky="ew", pady=5, columnspan=2)
-kategoria_input = OptionMenu(tab1, clicked, *options)
+
+
+def optionmenu_callback(choice):
+    print("optionmenu dropdown clicked:", choice)
+
+
+kategoria_input = customtkinter.CTkOptionMenu(
+    tab1, values=options, command=optionmenu_callback
+)
 kategoria_input.grid(row=3, column=1, sticky="ew", pady=5, columnspan=2)
 
 # Save Button
