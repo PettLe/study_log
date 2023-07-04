@@ -90,24 +90,26 @@ def delete_course(item):
 
 # Render the contents of overall tab
 def render_results(courses):
+    c.execute("SELECT SUM(osp) FROM courses")
+    data = c.fetchall()
+    # print("Osp = ", data[0][0])
     arvosana = 0
     arvosanat_lasketut = 0
-    osp = 0
+    osp = data[0][0]
+
     for course in courses:
-        osp += int(course[1])
+        # osp += int(course[1])
         try:
             arvosana += int(course[2])
             arvosanat_lasketut += 1
         except:
             continue
     if arvosana == 0:
-        arvosana = "-"
+        arvosana = str("-----")
+        print(arvosana)
     else:
         arvosana = arvosana / arvosanat_lasketut
         arvosana = round(arvosana, 1)
-
-    if arvosana == 0:
-        arvosana = "-"
 
     columns = ("course_name", "osp", "grade", "category")
 
@@ -155,14 +157,14 @@ def render_results(courses):
     deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
 
     arvosana_label = customtkinter.CTkLabel(
-        controlFrame, text="Keskiarvo:", font=("Helvetica", 10, "bold")
+        controlFrame, text=f"Keskiarvo: {str(arvosana)}", font=("Helvetica", 10, "bold")
     )
-    arvosana_label.grid(row=0, column=1, sticky="ew", pady=2)
+    arvosana_label.grid(row=1, column=0, sticky="w", pady=2)
 
-    arvosana_data = customtkinter.CTkLabel(
-        controlFrame, text=(arvosana), font=("Helvetica", 10, "bold")
+    osp_label = customtkinter.CTkLabel(
+        controlFrame, text=f"Osp (yht.): {osp}", font=("Helvetica", 10, "bold")
     )
-    arvosana_data.grid(row=1, column=1, sticky="ew", pady=2)
+    osp_label.grid(row=1, column=1, sticky="w", pady=2)
 
 
 def updateSort():
@@ -191,8 +193,6 @@ x = (screen_width / 2) - (width / 2)
 y = (screen_height / 2) - (height / 2)
 
 app.geometry("%dx%d+%d+%d" % (width, height, x, y))
-# app.geometry("500x500")
-# app.eval("tk::PlaceWindow . center")
 
 tab_view = customtkinter.CTkTabview(app)
 tab_view.pack()
