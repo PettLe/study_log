@@ -124,7 +124,13 @@ def render_results(courses):
 
     # add data to the treeview
     for course in courses:
-        temp = (course[0], course[1], course[2], course[3], course[4])
+        temp = (
+            course[0],
+            course[1],
+            course[2].capitalize(),
+            course[3].capitalize(),
+            course[4],
+        )
         tree.insert("", END, values=temp)
 
     def item_selected(event):
