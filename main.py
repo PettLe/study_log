@@ -118,7 +118,7 @@ def render_results(courses):
 
     # define headings
     tree.heading("course_name", text="Kurssin nimi")
-    tree.heading("osp", text="Osp.")
+    tree.heading("osp", text="Op.")
     tree.heading("grade", text="Arvosana")
     tree.heading("category", text="Kategoria")
 
@@ -177,7 +177,7 @@ def render_results(courses):
     arvosana_label.grid(row=1, column=0, sticky="w", pady=2)
 
     osp_label = customtkinter.CTkLabel(
-        controlFrame, text=f"Osp (yht.): {osp}", font=("Helvetica", 10, "bold")
+        controlFrame, text=f"Op (yht.): {osp}", font=("Helvetica", 10, "bold")
     )
     osp_label.grid(row=1, column=1, sticky="w", pady=2)
 
