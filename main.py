@@ -139,6 +139,18 @@ def render_results(courses):
             record = item["values"]
             c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
             tieto = c.fetchall()
+            # Notes section
+            testiInfo = customtkinter.CTkTextbox(controlFrame, height=100)
+            testiInfo.grid(row=3, column=0, sticky="ew", pady=(5, 2))
+            testiInfo.insert("0.0", tieto[0][0])
+
+            updateBtn = customtkinter.CTkButton(
+                controlFrame,
+                text="Päivitä",
+                command=lambda id=tieto: print(id),
+            )
+            updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 2))
+
         deleteBtn = customtkinter.CTkButton(
             controlFrame,
             text="Poista",
@@ -277,8 +289,10 @@ osp_label = customtkinter.CTkLabel(tab1, text="Opintopisteet")
 osp_label.grid(row=1, column=0, sticky="ew", pady=5)
 arvosana_label = customtkinter.CTkLabel(tab1, text="Arvosana")
 arvosana_label.grid(row=2, column=0, sticky="ew", pady=5)
+muistiinpanot_label = customtkinter.CTkLabel(tab1, text="Muistiinpanot")
+muistiinpanot_label.grid(row=3, column=0, sticky="ew", pady=5)
 kategoria_label = customtkinter.CTkLabel(tab1, text="Kategoria")
-kategoria_label.grid(row=3, column=0, sticky="ew", pady=5)
+kategoria_label.grid(row=4, column=0, sticky="ew", pady=5)
 kurssi_input = customtkinter.CTkEntry(tab1)
 kurssi_input.grid(row=0, column=1, sticky="ew", pady=5, columnspan=2)
 osp_input = customtkinter.CTkEntry(tab1)
@@ -295,11 +309,13 @@ def optionmenu_callback(choice):
 kategoria_input = customtkinter.CTkOptionMenu(
     tab1, values=options, command=optionmenu_callback
 )
-kategoria_input.grid(row=3, column=1, sticky="w", pady=5, columnspan=2)
+muistiinpanot_input = customtkinter.CTkTextbox(tab1, height=100)
+muistiinpanot_input.grid(row=3, column=1, sticky="ew", pady=5, columnspan=2)
+kategoria_input.grid(row=4, column=1, sticky="w", pady=5, columnspan=2)
 
 # Save Button
 btn1 = customtkinter.CTkButton(tab1, text="Lisää", command=save_data)
-btn1.grid(row=4, column=1, sticky="ew")
+btn1.grid(row=5, column=1, sticky="ew")
 
 render_results(fetch_saved_data())
 
