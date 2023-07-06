@@ -21,6 +21,15 @@ c = conn.cursor()
 #           """
 # )
 
+# c.execute(
+#     """
+# CREATE TABLE notes (
+#     course_id INTEGER,
+#     note TEXT
+# )
+# """
+# )
+
 # If need to clear widgets from overall:
 # for child in tab2.grid_slaves():
 #     if int(child.grid_info()["row"]) >= 1:
@@ -66,9 +75,40 @@ def save_data():
     )
 
     conn.commit()
+
+    c.execute(
+        "SELECT oid FROM courses WHERE courses.name = :course_name",
+        {"course_name": kurssi_input.get()},
+    )
+
+    course_oid = c.fetchall()
+
+    print(course_oid[0][0])
+
+    if len(muistiinpanot_input.get("1.0", "end-1c")) < 1:
+        course_notes = "---"
+    else:
+        course_notes = muistiinpanot_input.get("1.0", "end-1c")
+
+    c.execute(
+        "INSERT INTO notes VALUES (:course_id, :note)",
+        {
+            "course_id": course_oid[0][0],
+            "note": course_notes,
+        },
+    )
+
+    # c.execute(
+    #     "SELECT note FROM notes WHERE course_id = :course_id",
+    #     {"course_id": course_oid[0][0]},
+    # )
+    # testidata = c.fetchall()
+    # print(testidata)
+
     kurssi_input.delete(0, END)
     osp_input.delete(0, END)
     arvosana_input.delete(0, END)
+    muistiinpanot_input.delete("0.0", END)
     render_results(fetch_saved_data())
     # conn.close()
 
@@ -84,6 +124,8 @@ def fetch_saved_data():
 def delete_course(item):
     # SQL command to delete based on oid. Then update
     c.execute(f"DELETE FROM courses WHERE oid = {item[0][4]}")
+    conn.commit()
+    c.execute(f"DELETE FROM notes WHERE course_id = {item[0][4]}")
     conn.commit()
     updateSort()
 
@@ -139,10 +181,21 @@ def render_results(courses):
             record = item["values"]
             c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
             tieto = c.fetchall()
+
             # Notes section
-            testiInfo = customtkinter.CTkTextbox(controlFrame, height=100)
-            testiInfo.grid(row=3, column=0, sticky="ew", pady=(5, 2))
-            testiInfo.insert("0.0", tieto[0][0])
+
+            c.execute(
+                "SELECT note FROM notes WHERE course_id = :course_id",
+                {"course_id": tieto[0][4]},
+            )
+            notesData = c.fetchall()
+
+            print(notesData)
+            print(tieto[0][4])
+
+            courseNotesBox = customtkinter.CTkTextbox(controlFrame, height=100)
+            courseNotesBox.grid(row=3, column=0, sticky="ew", pady=(5, 2))
+            courseNotesBox.insert("0.0", notesData)
 
             updateBtn = customtkinter.CTkButton(
                 controlFrame,
