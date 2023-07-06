@@ -37,7 +37,9 @@ c = conn.cursor()
 
 
 # Custom system settings
-customtkinter.set_appearance_mode("System")
+system_theme = "dark"
+customtkinter.set_appearance_mode(system_theme)
+# customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("green")
 
 
@@ -375,6 +377,21 @@ kategoria_input.grid(row=4, column=1, sticky="w", pady=5, columnspan=2)
 # Save Button
 btn1 = customtkinter.CTkButton(tab1, text="Lisää", command=save_data)
 btn1.grid(row=5, column=1, sticky="ew")
+
+
+# Change system color theme
+# def switch_theme():
+#     global system_theme
+#     if system_theme == "dark":
+#         system_theme = "light"
+#         customtkinter.set_appearance_mode(system_theme)
+#     else:
+#         system_theme = "dark"
+#         customtkinter.set_appearance_mode(system_theme)
+
+
+# changeTheme = customtkinter.CTkButton(tab1, text="Väriteema", command=switch_theme)
+# changeTheme.grid(row=6, column=0, sticky="ew")
 
 render_results(fetch_saved_data())
 
