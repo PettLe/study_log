@@ -83,7 +83,7 @@ def save_data():
 
     course_oid = c.fetchall()
 
-    print(course_oid[0][0])
+    # print(course_oid[0][0])
 
     if len(muistiinpanot_input.get("1.0", "end-1c")) < 1:
         course_notes = "---"
@@ -98,13 +98,6 @@ def save_data():
         },
     )
 
-    # c.execute(
-    #     "SELECT note FROM notes WHERE course_id = :course_id",
-    #     {"course_id": course_oid[0][0]},
-    # )
-    # testidata = c.fetchall()
-    # print(testidata)
-
     kurssi_input.delete(0, END)
     osp_input.delete(0, END)
     arvosana_input.delete(0, END)
@@ -116,7 +109,6 @@ def save_data():
 def fetch_saved_data():
     c.execute("SELECT *, oid FROM courses")
     data = c.fetchall()
-    # print(data)
     conn.commit()
     return data
 
@@ -128,6 +120,14 @@ def delete_course(item):
     c.execute(f"DELETE FROM notes WHERE course_id = {item[0][4]}")
     conn.commit()
     updateSort()
+
+
+def update_notes(notesTuple):
+    c.execute(
+        "UPDATE notes SET note = :new_note WHERE course_id = :notes_id",
+        {"new_note": notesTuple[0], "notes_id": notesTuple[1]},
+    )
+    conn.commit()
 
 
 # Render the contents of overall tab
@@ -183,26 +183,27 @@ def render_results(courses):
             tieto = c.fetchall()
 
             # Notes section
-
             c.execute(
                 "SELECT note FROM notes WHERE course_id = :course_id",
                 {"course_id": tieto[0][4]},
             )
             notesData = c.fetchall()
 
-            print(notesData)
-            print(tieto[0][4])
-
             courseNotesBox = customtkinter.CTkTextbox(controlFrame, height=100)
             courseNotesBox.grid(row=3, column=0, sticky="ew", pady=(5, 2))
-            courseNotesBox.insert("0.0", notesData)
+            courseNotesBox.insert("0.0", notesData[0][0])
 
-            updateBtn = customtkinter.CTkButton(
-                controlFrame,
-                text="Päivitä",
-                command=lambda id=tieto: print(id),
-            )
-            updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 2))
+        # Identify UPDATE call and send data forward to be updated in table
+        def identifyClick(event):
+            newNote = courseNotesBox.get("1.0", "end-1c")
+            update_notes((newNote, tieto[0][4]))
+
+        updateBtn = customtkinter.CTkButton(
+            controlFrame,
+            text="Päivitä",
+            command=lambda id=(): identifyClick(event),
+        )
+        updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 2))
 
         deleteBtn = customtkinter.CTkButton(
             controlFrame,
