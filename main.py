@@ -137,8 +137,11 @@ def render_results(courses):
     arvosana = 0
     arvosanat_lasketut = 0
     osp = data[0][0]
+    op_category = 0
+    # print(courses)
 
     for course in courses:
+        op_category += int(course[1])
         try:
             arvosana += int(course[2])
             arvosanat_lasketut += 1
@@ -231,9 +234,11 @@ def render_results(courses):
     arvosana_label.grid(row=1, column=0, sticky="w", pady=2)
 
     osp_label = customtkinter.CTkLabel(
-        controlFrame, text=f"Op (yht.): {osp}", font=("Helvetica", 10, "bold")
+        controlFrame,
+        text=f"Opintopisteet: {op_category} (yht. {osp})",
+        font=("Helvetica", 10, "bold"),
     )
-    osp_label.grid(row=1, column=1, sticky="w", pady=2)
+    osp_label.grid(row=1, column=1, sticky="ew", pady=2)
 
 
 def updateSort():
@@ -296,7 +301,7 @@ options2 = [
     "väkivaltatutkimus",
     "sukupuolentutkimus",
     "digimarkkinointi",
-    "vastuullisuus ja kestävä kehitys työelämässä",
+    "vastuullisuus & kestävä kehitys",
     "tilastotiede",
     "tekoäly",
     "muu",
@@ -325,7 +330,7 @@ options = [
     "väkivaltatutkimus",
     "sukupuolentutkimus",
     "digimarkkinointi",
-    "vastuullisuus ja kestävä kehitys työelämässä",
+    "vastuullisuus & kestävä kehitys",
     "tilastotiede",
     "tekoäly",
     "muu",
