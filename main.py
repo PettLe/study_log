@@ -76,6 +76,9 @@ class TabView(customtkinter.CTkTabview):
         # self.pack(expand=True, fill="both")
         self.tab1 = Tab1(master=self.tab("Lisää kurssi"))
         self.tab1.pack(fill="both", expand=True, padx=0, pady=0)
+
+        self.tab2 = Tab2(master=self.tab("Näytä kaikki"))
+        self.tab2.pack(fill="both", expand=True, padx=0, pady=0)
         # self.tab1.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
         # self.button_1 = customtkinter.CTkButton(self.tab("Lisää kurssi"))
         # self.button_2 = customtkinter.CTkButton(self.tab("Näytä kaikki"))
@@ -87,7 +90,7 @@ class TabView(customtkinter.CTkTabview):
 class Tab1(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        # self.pack(expand=True, fill="both")
+        # self.pack(fill="both", expand=True, padx=0, pady=0)
         self.grid_columnconfigure((0, 1, 2), weight=1)
 
         self.kurssi_label = customtkinter.CTkLabel(self, text="Kurssin nimi")
@@ -123,7 +126,7 @@ class Tab1(customtkinter.CTkFrame):
         clicked.set("väkivaltatutkimus")
 
         self.kategoria_input = customtkinter.CTkOptionMenu(
-            self, values=self.options, command=self.test
+            self, values=self.options, command=self.optionmenu_callback
         )
         self.muistiinpanot_input = customtkinter.CTkTextbox(self, height=100)
         self.muistiinpanot_input.grid(
@@ -136,7 +139,29 @@ class Tab1(customtkinter.CTkFrame):
         self.saveBtn.grid(row=5, column=1, sticky="ew")
 
     def test(self):
-        pass
+        print("Ohalalalaa")
+
+    def optionmenu_callback(self, choice):
+        # updateSort()
+        print("optionmenu dropdown clicked:", choice)
+
+
+class Tab2(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.data = self.fetch_data()
+
+        self.testBtn = customtkinter.CTkButton(self, text="Kokeile", command=self.nappi)
+        self.testBtn.grid(row=0, column=1, sticky="ew")
+
+    def fetch_data(self):
+        c.execute("SELECT * FROM courses")
+        data = c.fetchall()
+        return data
+        # print(data)
+
+    def nappi(self):
+        print(self.data)
 
 
 # # kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
