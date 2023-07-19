@@ -47,8 +47,8 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        width = 500
-        height = 500
+        width = 600
+        height = 600
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         x = (screen_width / 2) - (width / 2)
@@ -216,6 +216,42 @@ class Tab2(customtkinter.CTkFrame):
         self.deleteBtn.bind("<Button-1>", self.delete_course)
         # self.tree.bind("<<TreeviewSelect>>", self.delete_course)
 
+        self.courseNotesBox = customtkinter.CTkTextbox(self.controlFrame, height=100)
+        self.courseNotesBox.grid(row=3, column=0, sticky="ew", pady=(5, 2))
+        # self.courseNotesBox.insert("0.0", notesData[0][0])
+
+        # Sorting
+        self.options = [
+            "kaikki",
+            "väkivaltatutkimus",
+            "sukupuolentutkimus",
+            "digimarkkinointi",
+            "vastuullisuus & kestävä kehitys",
+            "tilastotiede",
+            "tekoäly",
+            "muu",
+            "hylje-biologia",
+            "juuston alkeet",
+            "pönkö",
+        ]
+        self.clicked = customtkinter.StringVar(value="kaikki")
+
+        # Find the size of the longest word in optionMenu and use it as width to stop widget from resizing
+        self.menu_width = len(max(self.options, key=len))
+
+        self.lajittelu_input = customtkinter.CTkOptionMenu(
+            self.controlFrame, values=self.options, command=self.optionmenu_callback
+        )
+        self.lajittelu_input.configure(width=self.menu_width)
+        self.lajittelu_input.grid(
+            row=0, column=2, sticky="ew", pady=(5, 2), columnspan=2
+        )
+
+    def optionmenu_callback(self, event):
+        print("optionmenu dropdown clicked:", event)
+        # return
+        # updateSort()
+
     def fetch_data(self):
         c.execute("SELECT *, oid FROM courses")
         data = c.fetchall()
@@ -231,25 +267,10 @@ class Tab2(customtkinter.CTkFrame):
         print(self.osp)
         print(self.data)
 
-    # def item_selected(self, event):
-    #     for selected_item in self.tree.selection():
-    #         item = self.tree.item(selected_item)
-    #         record = item["values"]
-    #         # self.testaus = "Gorilla"
-    #         # print(self.testaus)
-    #         # print(record[4])
-    #         c.execute(f"SELECT * FROM courses WHERE oid = {record[4]}")
-    #         data = c.fetchall()
-    #         print(data[0][0])
-    #         # return record
-
     def delete_course(self, event):
         for selected_item in self.tree.selection():
             item = self.tree.item(selected_item)
             record = item["values"]
-            # self.testaus = "Gorilla"
-            # print(self.testaus)
-            # print(record[4])
             c.execute(f"SELECT * FROM courses WHERE oid = {record[4]}")
             data = c.fetchall()
             print(data[0][0])
@@ -350,9 +371,6 @@ class Tab2(customtkinter.CTkFrame):
 #             )
 #             notesData = c.fetchall()
 
-#             courseNotesBox = customtkinter.CTkTextbox(controlFrame, height=100)
-#             courseNotesBox.grid(row=3, column=0, sticky="ew", pady=(5, 2))
-#             courseNotesBox.insert("0.0", notesData[0][0])
 
 #         # Identify UPDATE call and send data forward to be updated in table
 #         def identifyClick(event):
@@ -379,43 +397,6 @@ class Tab2(customtkinter.CTkFrame):
 #             else:
 #                 continue
 #         render_results(temp)
-
-
-# # Sorting
-# options2 = [
-#     "kaikki",
-#     "väkivaltatutkimus",
-#     "sukupuolentutkimus",
-#     "digimarkkinointi",
-#     "vastuullisuus & kestävä kehitys",
-#     "tilastotiede",
-#     "tekoäly",
-#     "muu",
-#     "hylje-biologia",
-#     "juuston alkeet",
-#     "pönkö",
-# ]
-# clicked2 = customtkinter.StringVar(value="kaikki")
-
-# # Find the size of the longest word in optionMenu and use it as width to stop widget from resizing
-# menu_width = len(max(options2, key=len))
-
-
-# def optionmenu_callback(choice):
-#     updateSort()
-#     # print("optionmenu dropdown clicked:", choice)
-
-
-# lajittelu_input = customtkinter.CTkOptionMenu(
-#     controlFrame, values=options2, command=optionmenu_callback
-# )
-# lajittelu_input.configure(width=menu_width)
-# lajittelu_input.grid(row=0, column=2, sticky="ew", pady=(5, 2), columnspan=2)
-
-
-# def optionmenu_callback(choice):
-#     return
-#     # print("optionmenu dropdown clicked:", choice)
 
 # render_results(fetch_saved_data())
 
