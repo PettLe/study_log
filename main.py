@@ -178,7 +178,7 @@ class Tab2(customtkinter.CTkFrame):
             )
             self.tree.insert("", END, values=temp)
 
-        self.tree.bind("<<TreeviewSelect>>", self.item_selected)
+        # self.tree.bind("<<TreeviewSelect>>", self.item_selected)
         self.tree.grid(row=0, column=0, sticky="nsew")
 
         # add a scrollbar
@@ -205,6 +205,17 @@ class Tab2(customtkinter.CTkFrame):
         )
         self.osp_label.grid(row=1, column=1, sticky="ew", pady=2)
 
+        # self.deleteBtn = customtkinter.CTkButton(
+        #     self.controlFrame,
+        #     text="Poista",
+        #     command=lambda id=self.testi: self.delete_course(id),
+        # )
+        self.deleteBtn = customtkinter.CTkButton(self.controlFrame, text="Poista")
+
+        self.deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
+        self.deleteBtn.bind("<Button-1>", self.delete_course)
+        # self.tree.bind("<<TreeviewSelect>>", self.delete_course)
+
     def fetch_data(self):
         c.execute("SELECT *, oid FROM courses")
         data = c.fetchall()
@@ -220,11 +231,29 @@ class Tab2(customtkinter.CTkFrame):
         print(self.osp)
         print(self.data)
 
-    def item_selected(self, event):
+    # def item_selected(self, event):
+    #     for selected_item in self.tree.selection():
+    #         item = self.tree.item(selected_item)
+    #         record = item["values"]
+    #         # self.testaus = "Gorilla"
+    #         # print(self.testaus)
+    #         # print(record[4])
+    #         c.execute(f"SELECT * FROM courses WHERE oid = {record[4]}")
+    #         data = c.fetchall()
+    #         print(data[0][0])
+    #         # return record
+
+    def delete_course(self, event):
         for selected_item in self.tree.selection():
             item = self.tree.item(selected_item)
             record = item["values"]
-            print(record)
+            # self.testaus = "Gorilla"
+            # print(self.testaus)
+            # print(record[4])
+            c.execute(f"SELECT * FROM courses WHERE oid = {record[4]}")
+            data = c.fetchall()
+            print(data[0][0])
+            # return record
 
 
 # # kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
@@ -336,20 +365,6 @@ class Tab2(customtkinter.CTkFrame):
 #             command=lambda id=(): identifyClick(event),
 #         )
 #         updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 2))
-
-#         deleteBtn = customtkinter.CTkButton(
-#             controlFrame,
-#             text="Poista",
-#             command=lambda id=tieto: delete_course(id),
-#         )
-#         deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
-
-
-#     # EMPTY delete button to hide mistakes, oops
-#     deleteBtn = customtkinter.CTkButton(controlFrame, text="Poista")
-#     deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
-
-#
 
 
 # def updateSort():
