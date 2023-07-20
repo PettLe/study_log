@@ -322,10 +322,14 @@ class Tab2(customtkinter.CTkFrame):
         for selected_item in self.tree.selection():
             item = self.tree.item(selected_item)
             record = item["values"]
-            c.execute(f"SELECT * FROM courses WHERE oid = {record[4]}")
+            c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
             data = c.fetchall()
-            print(data[0][0])
-            # return record
+
+            # SQL command to delete based on oid. Then update
+            c.execute(f"DELETE FROM courses WHERE oid = {data[0][4]}")
+            conn.commit()
+            c.execute(f"DELETE FROM notes WHERE course_id = {data[0][4]}")
+            conn.commit()
 
     def item_selected(self, event):
         for selected_item in self.tree.selection():
