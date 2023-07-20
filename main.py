@@ -248,12 +248,6 @@ class Tab2(customtkinter.CTkFrame):
             font=("Helvetica", 10, "bold"),
         )
         self.osp_label.grid(row=1, column=1, sticky="ew", pady=2)
-
-        # self.deleteBtn = customtkinter.CTkButton(
-        #     self.controlFrame,
-        #     text="Poista",
-        #     command=lambda id=self.testi: self.delete_course(id),
-        # )
         self.deleteBtn = customtkinter.CTkButton(self.controlFrame, text="Poista")
 
         self.deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
@@ -331,38 +325,29 @@ class Tab2(customtkinter.CTkFrame):
             c.execute(f"DELETE FROM notes WHERE course_id = {data[0][4]}")
             conn.commit()
 
+            #     updateSort()
+
     def item_selected(self, event):
         for selected_item in self.tree.selection():
             item = self.tree.item(selected_item)
             record = item["values"]
             c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
             tieto = c.fetchall()
-            print(tieto)
+
             # Notes section
-            # c.execute(
-            #     "SELECT note FROM notes WHERE course_id = :course_id",
-            #     {"course_id": tieto[0][4]},
-            # )
-            # notesData = c.fetchall()
-            # print(notesData)
-            c.execute("SELECT * FROM notes")
-            kokeilu = c.fetchall()
-            print(kokeilu)
+            c.execute(
+                "SELECT note FROM notes WHERE course_id = :course_id",
+                {"course_id": tieto[0][4]},
+            )
+            notesData = c.fetchall()
+            self.courseNotesBox.delete("0.0", END)
+            self.courseNotesBox.insert("0.0", notesData[0][0])
 
     # Identify UPDATE call and send data forward to be updated in table
     def identifyClick(self, event):
         print(event)
         #     newNote = self.courseNotesBox.get("1.0", "end-1c")
         #     self.update_notes((newNote, tieto[0][4]))
-
-
-# def delete_course(item):
-#     # SQL command to delete based on oid. Then update
-#     c.execute(f"DELETE FROM courses WHERE oid = {item[0][4]}")
-#     conn.commit()
-#     c.execute(f"DELETE FROM notes WHERE course_id = {item[0][4]}")
-#     conn.commit()
-#     updateSort()
 
 
 # def update_notes(notesTuple):
