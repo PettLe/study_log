@@ -128,7 +128,9 @@ class Tab1(customtkinter.CTkFrame):
         self.kategoria_input.grid(row=4, column=1, sticky="w", pady=5, columnspan=2)
 
         # Save Button
-        self.saveBtn = customtkinter.CTkButton(self, text="Lisää", command=self.test)
+        self.saveBtn = customtkinter.CTkButton(
+            self, text="Lisää", command=self.save_data
+        )
         self.saveBtn.grid(row=5, column=1, sticky="ew")
 
     def test(self):
@@ -137,6 +139,51 @@ class Tab1(customtkinter.CTkFrame):
     def optionmenu_callback(self, choice):
         # updateSort()
         print("optionmenu dropdown clicked:", choice)
+
+    def save_data(self):
+        # Insert into table
+        c.execute(
+            "INSERT INTO courses VALUES (:course_name, :osp, :grade, :category)",
+            {
+                "course_name": self.kurssi_input.get(),
+                "osp": self.osp_input.get(),
+                "grade": self.arvosana_input.get(),
+                "category": self.kategoria_input.get(),
+            },
+        )
+
+        conn.commit()
+
+        c.execute(
+            "SELECT oid FROM courses WHERE courses.name = :course_name",
+            {"course_name": self.kurssi_input.get()},
+        )
+
+        course_oid = c.fetchall()
+
+        # print(course_oid[0][0])
+
+        if len(self.muistiinpanot_input.get("1.0", "end-1c")) < 1:
+            course_notes = "---"
+        else:
+            course_notes = self.muistiinpanot_input.get("1.0", "end-1c")
+
+        c.execute(
+            "INSERT INTO notes VALUES (:course_id, :note)",
+            {
+                "course_id": course_oid[0][0],
+                "note": course_notes,
+            },
+        )
+
+        self.kurssi_input.delete(0, END)
+        self.osp_input.delete(0, END)
+        self.arvosana_input.delete(0, END)
+        self.muistiinpanot_input.delete("0.0", END)
+        # render_results(fetch_saved_data())
+
+
+#     # conn.close()
 
 
 class Tab2(customtkinter.CTkFrame):
@@ -278,48 +325,6 @@ class Tab2(customtkinter.CTkFrame):
 
 
 # # kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
-# def save_data():
-#     # Insert into table
-#     c.execute(
-#         "INSERT INTO courses VALUES (:course_name, :osp, :grade, :category)",
-#         {
-#             "course_name": kurssi_input.get(),
-#             "osp": osp_input.get(),
-#             "grade": arvosana_input.get(),
-#             "category": kategoria_input.get(),
-#         },
-#     )
-
-#     conn.commit()
-
-#     c.execute(
-#         "SELECT oid FROM courses WHERE courses.name = :course_name",
-#         {"course_name": kurssi_input.get()},
-#     )
-
-#     course_oid = c.fetchall()
-
-#     # print(course_oid[0][0])
-
-#     if len(muistiinpanot_input.get("1.0", "end-1c")) < 1:
-#         course_notes = "---"
-#     else:
-#         course_notes = muistiinpanot_input.get("1.0", "end-1c")
-
-#     c.execute(
-#         "INSERT INTO notes VALUES (:course_id, :note)",
-#         {
-#             "course_id": course_oid[0][0],
-#             "note": course_notes,
-#         },
-#     )
-
-#     kurssi_input.delete(0, END)
-#     osp_input.delete(0, END)
-#     arvosana_input.delete(0, END)
-#     muistiinpanot_input.delete("0.0", END)
-#     render_results(fetch_saved_data())
-#     # conn.close()
 
 
 # def delete_course(item):
