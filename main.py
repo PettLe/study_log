@@ -133,11 +133,7 @@ class Tab1(customtkinter.CTkFrame):
         )
         self.saveBtn.grid(row=5, column=1, sticky="ew")
 
-    def test(self):
-        print("Ohalalalaa")
-
     def optionmenu_callback(self, choice):
-        # updateSort()
         print("optionmenu dropdown clicked:", choice)
 
     def save_data(self):
@@ -175,6 +171,7 @@ class Tab1(customtkinter.CTkFrame):
                 "note": course_notes,
             },
         )
+        conn.commit()
 
         self.kurssi_input.delete(0, END)
         self.osp_input.delete(0, END)
@@ -225,7 +222,7 @@ class Tab2(customtkinter.CTkFrame):
             )
             self.tree.insert("", END, values=temp)
 
-        # self.tree.bind("<<TreeviewSelect>>", self.item_selected)
+        self.tree.bind("<<TreeviewSelect>>", self.item_selected)
         self.tree.grid(row=0, column=0, sticky="nsew")
 
         # add a scrollbar
@@ -294,6 +291,13 @@ class Tab2(customtkinter.CTkFrame):
             row=0, column=2, sticky="ew", pady=(5, 2), columnspan=2
         )
 
+        self.updateBtn = customtkinter.CTkButton(
+            self.controlFrame,
+            text="Päivitä",
+            command=lambda id=(): self.identifyClick(),
+        )
+        self.updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 2))
+
     def optionmenu_callback(self, event):
         print("optionmenu dropdown clicked:", event)
         # return
@@ -323,8 +327,29 @@ class Tab2(customtkinter.CTkFrame):
             print(data[0][0])
             # return record
 
+    def item_selected(self, event):
+        for selected_item in self.tree.selection():
+            item = self.tree.item(selected_item)
+            record = item["values"]
+            c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
+            tieto = c.fetchall()
+            print(tieto)
+            # Notes section
+            # c.execute(
+            #     "SELECT note FROM notes WHERE course_id = :course_id",
+            #     {"course_id": tieto[0][4]},
+            # )
+            # notesData = c.fetchall()
+            # print(notesData)
+            c.execute("SELECT * FROM notes")
+            kokeilu = c.fetchall()
+            print(kokeilu)
 
-# # kurssi_input.get(), osp_input.get(), arvosana_input.get(), clicked.get()
+    # Identify UPDATE call and send data forward to be updated in table
+    def identifyClick(self, event):
+        print(event)
+        #     newNote = self.courseNotesBox.get("1.0", "end-1c")
+        #     self.update_notes((newNote, tieto[0][4]))
 
 
 # def delete_course(item):
@@ -359,35 +384,6 @@ class Tab2(customtkinter.CTkFrame):
 #     else:
 #         arvosana = arvosana / arvosanat_lasketut
 #         arvosana = round(arvosana, 1)
-
-#
-
-#     def item_selected(event):
-#         for selected_item in tree.selection():
-#             item = tree.item(selected_item)
-#             record = item["values"]
-#             c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
-#             tieto = c.fetchall()
-
-#             # Notes section
-#             c.execute(
-#                 "SELECT note FROM notes WHERE course_id = :course_id",
-#                 {"course_id": tieto[0][4]},
-#             )
-#             notesData = c.fetchall()
-
-
-#         # Identify UPDATE call and send data forward to be updated in table
-#         def identifyClick(event):
-#             newNote = courseNotesBox.get("1.0", "end-1c")
-#             update_notes((newNote, tieto[0][4]))
-
-#         updateBtn = customtkinter.CTkButton(
-#             controlFrame,
-#             text="Päivitä",
-#             command=lambda id=(): identifyClick(event),
-#         )
-#         updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 2))
 
 
 # def updateSort():
