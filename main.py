@@ -265,12 +265,9 @@ class Tab2(customtkinter.CTkFrame):
             row=0, column=2, sticky="ew", pady=(5, 2), columnspan=2
         )
 
-        self.updateBtn = customtkinter.CTkButton(
-            self.controlFrame,
-            text="Päivitä",
-            command=lambda id=(): self.identifyClick(),
-        )
+        self.updateBtn = customtkinter.CTkButton(self.controlFrame, text="Päivitä")
         self.updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 2))
+        self.updateBtn.bind("<Button-1>", self.updateNotes)
 
     def optionmenu_callback(self, event):
         print("optionmenu dropdown clicked:", event)
@@ -321,21 +318,43 @@ class Tab2(customtkinter.CTkFrame):
             )
             notesData = c.fetchall()
             self.courseNotesBox.delete("0.0", END)
-            self.courseNotesBox.insert("0.0", notesData[0][0])
+            try:
+                self.courseNotesBox.insert("0.0", notesData[0][0])
+            except:
+                continue
 
     # Identify UPDATE call and send data forward to be updated in table
-    def identifyClick(self, event):
-        print(event)
-        #     newNote = self.courseNotesBox.get("1.0", "end-1c")
-        #     self.update_notes((newNote, tieto[0][4]))
+    def updateNotes(self, event):
+        # print(event)
+        for selected_item in self.tree.selection():
+            item = self.tree.item(selected_item)
+            record = item["values"]
+            newNote = self.courseNotesBox.get("1.0", "end-1c")
 
-    # # Render the contents of overall tab
+            c.execute(f"SELECT * FROM notes WHERE course_id = {record[4]}")
+            existingNote = c.fetchall()
+
+            if len(existingNote) < 1:
+                c.execute(
+                    "INSERT INTO notes VALUES (:course_id, :note)",
+                    {
+                        "course_id": record[4],
+                        "note": newNote,
+                    },
+                )
+                conn.commit()
+            else:
+                c.execute(
+                    "UPDATE notes SET note = :new_note WHERE course_id = :notes_id",
+                    {"new_note": newNote, "notes_id": record[4]},
+                )
+                conn.commit()
+
     def fetch_grade(self):
         grades = []
         c.execute("SELECT grade FROM courses")
         data = c.fetchall()
         for grade in data:
-            # print(grade[0])
             try:
                 grades.append(int(grade[0]))
             except:
@@ -357,14 +376,6 @@ class Tab2(customtkinter.CTkFrame):
     #         self.arvosana = round(self.arvosana, 1)
 
     # self.render_results(self.fetch_data())
-
-
-# def update_notes(notesTuple):
-#     c.execute(
-#         "UPDATE notes SET note = :new_note WHERE course_id = :notes_id",
-#         {"new_note": notesTuple[0], "notes_id": notesTuple[1]},
-#     )
-#     conn.commit()
 
 
 # def updateSort():
