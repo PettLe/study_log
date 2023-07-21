@@ -9,27 +9,6 @@ conn = sqlite3.connect("course_data.db")
 # create cursor
 c = conn.cursor()
 
-# FIRST TIME create a table
-# c.execute(
-#     """
-#           CREATE TABLE courses (
-#               name TEXT,
-#               osp INTEGER,
-#               grade TEXT,
-#               category TEXT
-#           )
-#           """
-# )
-
-# c.execute(
-#     """
-# CREATE TABLE notes (
-#     course_id INTEGER,
-#     note TEXT
-# )
-# """
-# )
-
 # If need to clear widgets from overall:
 # for child in tab2.grid_slaves():
 #     if int(child.grid_info()["row"]) >= 1:
@@ -189,13 +168,14 @@ class Tab2(customtkinter.CTkFrame):
         self.grid_columnconfigure((0, 1), weight=1)
         self.data = self.fetch_data()
 
-        self.arvosana = 0
+        self.arvosana = self.fetch_grade()
+        # self.arvosana = 0
         self.arvosanat_lasketut = 0
         self.osp = self.fetch_osp()
         self.op_category = 0
 
-        self.testBtn = customtkinter.CTkButton(self, text="Kokeile", command=self.nappi)
-        self.testBtn.grid(row=2, column=0, sticky="ew")
+        # self.testBtn = customtkinter.CTkButton(self, text="Kokeile", command=self.nappi)
+        # self.testBtn.grid(row=2, column=0, sticky="ew")
 
         self.columns = ("course_name", "osp", "grade", "category")
 
@@ -349,6 +329,35 @@ class Tab2(customtkinter.CTkFrame):
         #     newNote = self.courseNotesBox.get("1.0", "end-1c")
         #     self.update_notes((newNote, tieto[0][4]))
 
+    # # Render the contents of overall tab
+    def fetch_grade(self):
+        grades = []
+        c.execute("SELECT grade FROM courses")
+        data = c.fetchall()
+        for grade in data:
+            # print(grade[0])
+            try:
+                grades.append(int(grade[0]))
+            except:
+                continue
+        return round(sum(grades) / len(grades), 1)
+
+    # def render_results(self, courses):
+    #     for course in courses:
+    #         self.op_category += int(course[1])
+    #         try:
+    #             self.arvosana += int(course[2])
+    #             self.arvosanat_lasketut += 1
+    #         except:
+    #             continue
+    #     if self.arvosana == 0:
+    #         self.arvosana = str("-----")
+    #     else:
+    #         self.arvosana = self.arvosana / self.arvosanat_lasketut
+    #         self.arvosana = round(self.arvosana, 1)
+
+    # self.render_results(self.fetch_data())
+
 
 # def update_notes(notesTuple):
 #     c.execute(
@@ -356,23 +365,6 @@ class Tab2(customtkinter.CTkFrame):
 #         {"new_note": notesTuple[0], "notes_id": notesTuple[1]},
 #     )
 #     conn.commit()
-
-
-# # Render the contents of overall tab
-# def render_results(courses):
-
-#     for course in courses:
-#         op_category += int(course[1])
-#         try:
-#             arvosana += int(course[2])
-#             arvosanat_lasketut += 1
-#         except:
-#             continue
-#     if arvosana == 0:
-#         arvosana = str("-----")
-#     else:
-#         arvosana = arvosana / arvosanat_lasketut
-#         arvosana = round(arvosana, 1)
 
 
 # def updateSort():
