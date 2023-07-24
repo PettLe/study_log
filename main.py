@@ -32,7 +32,7 @@ class App(customtkinter.CTk):
         screen_height = self.winfo_screenheight()
         x = (screen_width / 2) - (width / 2)
         y = (screen_height / 2) - (height / 2)
-
+        # self.configure(fg_color="lightgrey")
         self.title("Kaisan opiskelu log!")
         self.geometry("%dx%d+%d+%d" % (width, height, x, y))
         self.grid_columnconfigure((0, 1), weight=1)
@@ -46,9 +46,9 @@ class App(customtkinter.CTk):
 class TabView(customtkinter.CTkTabview):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-
         self.add("Lisää kurssi")
         self.add("Näytä kaikki")
+        self.configure(fg_color="lightgrey")
 
         self.tab1 = Tab1(master=self.tab("Lisää kurssi"))
         self.tab1.pack(fill="both", expand=True, padx=0, pady=0)
@@ -62,9 +62,9 @@ class TabView(customtkinter.CTkTabview):
 class Tab1(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        # self.pack(fill="both", expand=True, padx=0, pady=0)
+        # self.pack(fill="both", expand=True, padx=50, pady=50)
+        self.configure(fg_color="lightgrey")
         self.grid_columnconfigure((0, 1, 2), weight=1)
-
         self.kurssi_label = customtkinter.CTkLabel(self, text="Kurssin nimi")
         self.kurssi_label.grid(row=0, column=0, sticky="ew", pady=5)
         self.osp_label = customtkinter.CTkLabel(self, text="Opintopisteet")
@@ -167,7 +167,7 @@ class Tab2(customtkinter.CTkFrame):
         super().__init__(master, **kwargs)
         self.grid_columnconfigure((0, 1), weight=1)
         self.data = self.fetch_data()
-
+        self.configure(fg_color="lightgrey")
         self.arvosana = self.fetch_grade()
         # self.arvosana = 0
         self.arvosanat_lasketut = 0
@@ -212,6 +212,7 @@ class Tab2(customtkinter.CTkFrame):
 
         # Frame for courses tabs' control widgets
         self.controlFrame = customtkinter.CTkFrame(self)
+        self.controlFrame.configure(fg_color="lightgrey")
         self.controlFrame.grid(row=1, column=0, columnspan=2, sticky="ew")
         self.controlFrame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
@@ -266,7 +267,7 @@ class Tab2(customtkinter.CTkFrame):
         )
 
         self.updateBtn = customtkinter.CTkButton(self.controlFrame, text="Päivitä")
-        self.updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 2))
+        self.updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 200))
         self.updateBtn.bind("<Button-1>", self.updateNotes)
 
     def optionmenu_callback(self, event):
