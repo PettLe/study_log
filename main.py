@@ -169,13 +169,9 @@ class Tab2(customtkinter.CTkFrame):
         self.data = self.fetch_data()
         self.configure(fg_color="lightgrey")
         self.arvosana = self.fetch_grade()
-        # self.arvosana = 0
         self.arvosanat_lasketut = 0
         self.osp = self.fetch_osp()
-        self.op_category = 0
-
-        # self.testBtn = customtkinter.CTkButton(self, text="Kokeile", command=self.nappi)
-        # self.testBtn.grid(row=2, column=0, sticky="ew")
+        self.op_category = self.fetch_osp()
 
         self.columns = ("course_name", "osp", "grade", "category")
 
@@ -271,15 +267,23 @@ class Tab2(customtkinter.CTkFrame):
         self.updateBtn.bind("<Button-1>", self.updateNotes)
 
     def optionmenu_callback(self, event):
-        print("optionmenu dropdown clicked:", event)
-        # return
+        c.execute("SELECT SUM(osp) FROM courses WHERE category = '{}'".format(event))
+        data = c.fetchall()
+
+        if event == "kaikki":
+            self.osp_label.configure(
+                text=f"Opintopisteet: {self.osp} (yht. {self.osp})",
+            )
+        else:
+            self.osp_label.configure(
+                text=f"Opintopisteet: {data[0][0]} (yht. {self.osp})",
+            )
         # updateSort()
 
     def fetch_data(self):
         c.execute("SELECT *, oid FROM courses")
         data = c.fetchall()
         return data
-        # print(data)
 
     def fetch_osp(self):
         c.execute("SELECT SUM(osp) FROM courses")
@@ -364,7 +368,6 @@ class Tab2(customtkinter.CTkFrame):
 
     # def render_results(self, courses):
     #     for course in courses:
-    #         self.op_category += int(course[1])
     #         try:
     #             self.arvosana += int(course[2])
     #             self.arvosanat_lasketut += 1
