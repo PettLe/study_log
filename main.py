@@ -152,6 +152,8 @@ class Tab1(customtkinter.CTkFrame):
         )
         conn.commit()
 
+        # Tab2.tree.insert("", END, values=Tab2.fetch_data(Tab2)[-1])
+        # print(Tab2.fetch_data(Tab2)[-1])
         self.kurssi_input.delete(0, END)
         self.osp_input.delete(0, END)
         self.arvosana_input.delete(0, END)
@@ -166,12 +168,12 @@ class Tab2(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.grid_columnconfigure((0, 1), weight=1)
-        self.data = self.fetch_data()
+        # self.data = self.fetch_data()
         self.configure(fg_color="lightgrey")
         self.arvosana = self.fetch_grade()
         self.arvosanat_lasketut = 0
-        self.osp = self.fetch_osp()
-        self.op_category = self.fetch_osp()
+        # self.osp = self.fetch_osp()
+        # self.op_category = self.fetch_osp()
 
         self.columns = ("course_name", "osp", "grade", "category")
 
@@ -188,7 +190,7 @@ class Tab2(customtkinter.CTkFrame):
         self.tree.heading("category", text="Kategoria")
 
         # add data to the treeview
-        for course in self.data:
+        for course in self.fetch_data():
             temp = (
                 course[0],
                 course[1],
@@ -221,7 +223,7 @@ class Tab2(customtkinter.CTkFrame):
 
         self.osp_label = customtkinter.CTkLabel(
             self.controlFrame,
-            text=f"Opintopisteet: {self.op_category} (yht. {self.osp})",
+            text=f"Opintopisteet: {self.fetch_osp()} (yht. {self.fetch_osp()})",
             font=("Helvetica", 10, "bold"),
         )
         self.osp_label.grid(row=1, column=1, sticky="ew", pady=2)
@@ -270,14 +272,16 @@ class Tab2(customtkinter.CTkFrame):
         c.execute("SELECT SUM(osp) FROM courses WHERE category = '{}'".format(event))
         data = c.fetchall()
 
+        self.tree.delete(*self.tree.get_children())
         if event == "kaikki":
             self.osp_label.configure(
-                text=f"Opintopisteet: {self.osp} (yht. {self.osp})",
+                text=f"Opintopisteet: {self.fetch_osp()} (yht. {self.fetch_osp()})",
             )
         else:
             self.osp_label.configure(
-                text=f"Opintopisteet: {data[0][0]} (yht. {self.osp})",
+                text=f"Opintopisteet: {data[0][0]} (yht. {self.fetch_osp()})",
             )
+        self.render_tree(event)
         # updateSort()
 
     def fetch_data(self):
@@ -295,19 +299,61 @@ class Tab2(customtkinter.CTkFrame):
         print(self.data)
 
     def delete_course(self, event):
+        deleted_osp = 0
         for selected_item in self.tree.selection():
             item = self.tree.item(selected_item)
             record = item["values"]
             c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
             data = c.fetchall()
+            deleted_osp = data[0][1]
 
             # SQL command to delete based on oid. Then update
-            c.execute(f"DELETE FROM courses WHERE oid = {data[0][4]}")
-            conn.commit()
-            c.execute(f"DELETE FROM notes WHERE course_id = {data[0][4]}")
-            conn.commit()
+        c.execute(f"DELETE FROM courses WHERE oid = {data[0][4]}")
+        conn.commit()
+        c.execute(f"DELETE FROM notes WHERE course_id = {data[0][4]}")
+        conn.commit()
 
-            #     updateSort()
+        # # Empty tree and populate again with updated data
+        self.tree.delete(*self.tree.get_children())
+        for course in self.fetch_data():
+            temp = (
+                course[0],
+                course[1],
+                course[2].capitalize(),
+                course[3].capitalize(),
+                course[4],
+            )
+            self.tree.insert("", END, values=temp)
+        self.osp_label.configure(
+            text=f"Opintopisteet: {self.fetch_osp() - deleted_osp} (yht. {self.fetch_osp() - deleted_osp})",
+        )
+        #     updateSort()
+
+    def render_tree(self, category):
+        self.tree.delete(*self.tree.get_children())
+        if category == "kaikki":
+            for course in self.fetch_data():
+                temp = (
+                    course[0],
+                    course[1],
+                    course[2].capitalize(),
+                    course[3].capitalize(),
+                    course[4],
+                )
+                self.tree.insert("", END, values=temp)
+        else:
+            for course in self.fetch_data():
+                if course[3] == category:
+                    temp = (
+                        course[0],
+                        course[1],
+                        course[2].capitalize(),
+                        course[3].capitalize(),
+                        course[4],
+                    )
+                    self.tree.insert("", END, values=temp)
+                else:
+                    continue
 
     def item_selected(self, event):
         for selected_item in self.tree.selection():
