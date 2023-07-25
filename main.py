@@ -16,9 +16,7 @@ c = conn.cursor()
 
 
 # Custom system settings
-system_theme = "light"
-customtkinter.set_appearance_mode(system_theme)
-# customtkinter.set_appearance_mode("System")
+customtkinter.set_appearance_mode("light")
 customtkinter.set_default_color_theme("green")
 
 
@@ -32,15 +30,19 @@ class App(customtkinter.CTk):
         screen_height = self.winfo_screenheight()
         x = (screen_width / 2) - (width / 2)
         y = (screen_height / 2) - (height / 2)
-        # self.configure(fg_color="lightgrey")
+
         self.title("Kaisan opiskelu log!")
         self.geometry("%dx%d+%d+%d" % (width, height, x, y))
         self.grid_columnconfigure((0, 1), weight=1)
         self.tab_view = TabView(master=self)
         self.tab_view.pack(fill="both", expand=True, padx=20, pady=20)
-        # self.tab_view.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
-        # self.tab1 = Tab1(master=self.tab_view)
+        self.bind("<Button-1>", self.results_on_click)
+
+    def results_on_click(self, event):
+        # self.tab_view.tab2.testi2()
+        self.tab_view.tab2.render_tree("kaikki")
+        # print("Ababa")
 
 
 class TabView(customtkinter.CTkTabview):
@@ -57,12 +59,18 @@ class TabView(customtkinter.CTkTabview):
         self.tab2.pack(fill="both", expand=True, padx=0, pady=0)
         # self.button_1 = customtkinter.CTkButton(self.tab("Lisää kurssi"))
         # self.button_2 = customtkinter.CTkButton(self.tab("Näytä kaikki"))
+        # self.button_2.pack()
+        # self.tab2.bind("<Button-1>", self.tab2.testi2())
+        # self.tab2.testi2()
+
+    # def testi(self):
+    #     print("Ababa")
 
 
 class Tab1(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        # self.pack(fill="both", expand=True, padx=50, pady=50)
+        # master.master.tab2.testi2()
         self.configure(fg_color="lightgrey")
         self.grid_columnconfigure((0, 1, 2), weight=1)
         self.kurssi_label = customtkinter.CTkLabel(self, text="Kurssin nimi")
@@ -112,6 +120,9 @@ class Tab1(customtkinter.CTkFrame):
         )
         self.saveBtn.grid(row=5, column=1, sticky="ew")
 
+        # master.master.tab2.testi2()
+        # print()
+
     def optionmenu_callback(self, choice):
         print("optionmenu dropdown clicked:", choice)
 
@@ -126,7 +137,6 @@ class Tab1(customtkinter.CTkFrame):
                 "category": self.kategoria_input.get(),
             },
         )
-
         conn.commit()
 
         c.execute(
@@ -135,8 +145,6 @@ class Tab1(customtkinter.CTkFrame):
         )
 
         course_oid = c.fetchall()
-
-        # print(course_oid[0][0])
 
         if len(self.muistiinpanot_input.get("1.0", "end-1c")) < 1:
             course_notes = "---"
@@ -153,15 +161,16 @@ class Tab1(customtkinter.CTkFrame):
         conn.commit()
 
         # Tab2.tree.insert("", END, values=Tab2.fetch_data(Tab2)[-1])
+        # Tab2.render_tree(self.parent.Tab2, "kaikki")
         # print(Tab2.fetch_data(Tab2)[-1])
+        # App.update_idletasks()
+        # App.window.update()
         self.kurssi_input.delete(0, END)
         self.osp_input.delete(0, END)
         self.arvosana_input.delete(0, END)
         self.muistiinpanot_input.delete("0.0", END)
-        # render_results(fetch_saved_data())
 
-
-#     # conn.close()
+    # conn.close()
 
 
 class Tab2(customtkinter.CTkFrame):
@@ -190,20 +199,14 @@ class Tab2(customtkinter.CTkFrame):
         self.tree.heading("category", text="Kategoria")
 
         # add data to the treeview
-        for course in self.fetch_data():
-            temp = (
-                course[0],
-                course[1],
-                course[2].capitalize(),
-                course[3].capitalize(),
-                course[4],
-            )
-            self.tree.insert("", END, values=temp)
+        self.render_tree("kaikki")
 
         self.tree.bind("<<TreeviewSelect>>", self.item_selected)
         self.tree.grid(row=0, column=0, sticky="nsew")
 
-        # add a scrollbar
+        # print(self.tree)
+
+        # # add a scrollbar
         self.scrollbar = ttk.Scrollbar(self, orient=VERTICAL, command=self.tree.yview)
         self.tree.configure(yscroll=self.scrollbar.set)
         self.scrollbar.grid(row=0, column=1, sticky="ns")
@@ -268,11 +271,15 @@ class Tab2(customtkinter.CTkFrame):
         self.updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 200))
         self.updateBtn.bind("<Button-1>", self.updateNotes)
 
+    def testi2(self):
+        print("TÄMÄ KAKKOSESTA TULEE!")
+
     def optionmenu_callback(self, event):
         c.execute("SELECT SUM(osp) FROM courses WHERE category = '{}'".format(event))
         data = c.fetchall()
 
         self.tree.delete(*self.tree.get_children())
+
         if event == "kaikki":
             self.osp_label.configure(
                 text=f"Opintopisteet: {self.fetch_osp()} (yht. {self.fetch_osp()})",
@@ -294,10 +301,6 @@ class Tab2(customtkinter.CTkFrame):
         data = c.fetchall()
         return data[0][0]
 
-    def nappi(self):
-        print(self.osp)
-        print(self.data)
-
     def delete_course(self, event):
         deleted_osp = 0
         for selected_item in self.tree.selection():
@@ -313,23 +316,31 @@ class Tab2(customtkinter.CTkFrame):
         c.execute(f"DELETE FROM notes WHERE course_id = {data[0][4]}")
         conn.commit()
 
-        # # Empty tree and populate again with updated data
-        self.tree.delete(*self.tree.get_children())
-        for course in self.fetch_data():
-            temp = (
-                course[0],
-                course[1],
-                course[2].capitalize(),
-                course[3].capitalize(),
-                course[4],
-            )
-            self.tree.insert("", END, values=temp)
+        # RENDER EITHER ALL OR SPECIFIC CHOICE HMMM
+        self.render_tree(data[0][3])
+        # self.render_tree("kaikki")
+
+        # CATEGORY PART DOESN'T WORK HERE CORRECTLY
         self.osp_label.configure(
             text=f"Opintopisteet: {self.fetch_osp() - deleted_osp} (yht. {self.fetch_osp() - deleted_osp})",
         )
         #     updateSort()
 
     def render_tree(self, category):
+        # self.columns = ("course_name", "osp", "grade", "category")
+
+        # self.tree = ttk.Treeview(master=self, columns=self.columns, show="headings")
+        # self.tree.column("course_name", width=150, anchor=W)
+        # self.tree.column("osp", width=100, anchor=W)
+        # self.tree.column("grade", width=100, anchor=CENTER)
+        # self.tree.column("category", width=150, anchor=CENTER)
+
+        # # define headings
+        # self.tree.heading("course_name", text="Kurssin nimi")
+        # self.tree.heading("osp", text="Op.")
+        # self.tree.heading("grade", text="Arvosana")
+        # self.tree.heading("category", text="Kategoria")
+
         self.tree.delete(*self.tree.get_children())
         if category == "kaikki":
             for course in self.fetch_data():
@@ -354,6 +365,13 @@ class Tab2(customtkinter.CTkFrame):
                     self.tree.insert("", END, values=temp)
                 else:
                     continue
+        # self.tree.bind("<<TreeviewSelect>>", self.item_selected)
+        # self.tree.grid(row=0, column=0, sticky="nsew")
+
+        # # add a scrollbar
+        # self.scrollbar = ttk.Scrollbar(self, orient=VERTICAL, command=self.tree.yview)
+        # self.tree.configure(yscroll=self.scrollbar.set)
+        # self.scrollbar.grid(row=0, column=1, sticky="ns")
 
     def item_selected(self, event):
         for selected_item in self.tree.selection():
@@ -427,19 +445,6 @@ class Tab2(customtkinter.CTkFrame):
 
     # self.render_results(self.fetch_data())
 
-
-# def updateSort():
-#     temp = []
-#     data = fetch_saved_data()
-#     if lajittelu_input.get() == "kaikki":
-#         render_results(fetch_saved_data())
-#     else:
-#         for course in data:
-#             if course[3] == lajittelu_input.get():
-#                 temp.append(course)
-#             else:
-#                 continue
-#         render_results(temp)
 
 # render_results(fetch_saved_data())
 
