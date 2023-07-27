@@ -60,7 +60,6 @@ class TabView(customtkinter.CTkTabview):
 class Tab1(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
-        # master.master.tab2.testi2()
         self.configure(fg_color="lightgrey")
         self.grid_columnconfigure((0, 1, 2), weight=1)
         self.kurssi_label = customtkinter.CTkLabel(self, text="Kurssin nimi")
