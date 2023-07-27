@@ -149,11 +149,6 @@ class Tab1(customtkinter.CTkFrame):
         )
         conn.commit()
 
-        # Tab2.tree.insert("", END, values=Tab2.fetch_data(Tab2)[-1])
-        # Tab2.render_tree(self.parent.Tab2, "kaikki")
-        # print(Tab2.fetch_data(Tab2)[-1])
-        # App.update_idletasks()
-        # App.window.update()
         self.kurssi_input.delete(0, END)
         self.osp_input.delete(0, END)
         self.arvosana_input.delete(0, END)
@@ -168,7 +163,7 @@ class Tab2(customtkinter.CTkFrame):
         self.grid_columnconfigure((0, 1), weight=1)
         # self.data = self.fetch_data()
         self.configure(fg_color="lightgrey")
-        self.arvosana = self.fetch_grade()
+        # self.arvosana = self.fetch_grade()
         self.arvosanat_lasketut = 0
         # self.osp = self.fetch_osp()
         # self.op_category = self.fetch_osp()
@@ -208,14 +203,14 @@ class Tab2(customtkinter.CTkFrame):
 
         self.arvosana_label = customtkinter.CTkLabel(
             self.controlFrame,
-            text=f"Keskiarvo: {str(self.arvosana)}",
+            text=f"Keskiarvo: {str(self.fetch_grade('kaikki'))}",
             font=("Helvetica", 10, "bold"),
         )
         self.arvosana_label.grid(row=1, column=0, sticky="w", pady=2)
 
         self.osp_label = customtkinter.CTkLabel(
             self.controlFrame,
-            text=f"Opintopisteet: {self.fetch_osp()} (yht. {self.fetch_osp()})",
+            text=f"Opintopisteet: {self.fetch_osp('kaikki')[0]} (yht. {self.fetch_osp('kaikki')[1]})",
             font=("Helvetica", 10, "bold"),
         )
         self.osp_label.grid(row=1, column=1, sticky="ew", pady=2)
@@ -260,35 +255,51 @@ class Tab2(customtkinter.CTkFrame):
         self.updateBtn.grid(row=4, column=0, sticky="ew", pady=(5, 200))
         self.updateBtn.bind("<Button-1>", self.updateNotes)
 
-    def testi2(self):
-        print("TÄMÄ KAKKOSESTA TULEE!")
-
     def optionmenu_callback(self, event):
-        c.execute("SELECT SUM(osp) FROM courses WHERE category = '{}'".format(event))
-        data = c.fetchall()
-
         self.tree.delete(*self.tree.get_children())
 
-        if event == "kaikki":
-            self.osp_label.configure(
-                text=f"Opintopisteet: {self.fetch_osp()} (yht. {self.fetch_osp()})",
-            )
-        else:
-            self.osp_label.configure(
-                text=f"Opintopisteet: {data[0][0]} (yht. {self.fetch_osp()})",
-            )
+        self.osp_label.configure(
+            text=f"Opintopisteet: {self.fetch_osp(event)[0]} (yht. {self.fetch_osp(event)[1]})",
+        )
+        self.arvosana_label.configure(text=f"Keskiarvo: {self.fetch_grade(event)}")
         self.render_tree(event)
-        # updateSort()
 
     def fetch_data(self):
         c.execute("SELECT *, oid FROM courses")
         data = c.fetchall()
         return data
 
-    def fetch_osp(self):
+    def fetch_osp(self, category):
         c.execute("SELECT SUM(osp) FROM courses")
-        data = c.fetchall()
-        return data[0][0]
+        all_data = c.fetchall()
+
+        if category == "kaikki":
+            c.execute("SELECT SUM(osp) FROM courses")
+            category_data = c.fetchall()
+        else:
+            c.execute(
+                "SELECT SUM(osp) FROM courses WHERE category = '{}'".format(category)
+            )
+            category_data = c.fetchall()
+        return (category_data[0][0], all_data[0][0])
+
+    def fetch_grade(self, category):
+        grades = []
+
+        if category == "kaikki":
+            c.execute("SELECT grade FROM courses")
+            data = c.fetchall()
+        else:
+            c.execute(
+                "SELECT grade FROM courses WHERE category = '{}'".format(category)
+            )
+            data = c.fetchall()
+        for grade in data:
+            try:
+                grades.append(int(grade[0]))
+            except:
+                continue
+        return round(sum(grades) / len(grades), 1)
 
     def delete_course(self, event):
         deleted_osp = 0
@@ -313,7 +324,6 @@ class Tab2(customtkinter.CTkFrame):
         self.osp_label.configure(
             text=f"Opintopisteet: {self.fetch_osp() - deleted_osp} (yht. {self.fetch_osp() - deleted_osp})",
         )
-        #     updateSort()
 
     def render_tree(self, category):
         # self.columns = ("course_name", "osp", "grade", "category")
@@ -407,17 +417,6 @@ class Tab2(customtkinter.CTkFrame):
                     {"new_note": newNote, "notes_id": record[4]},
                 )
                 conn.commit()
-
-    def fetch_grade(self):
-        grades = []
-        c.execute("SELECT grade FROM courses")
-        data = c.fetchall()
-        for grade in data:
-            try:
-                grades.append(int(grade[0]))
-            except:
-                continue
-        return round(sum(grades) / len(grades), 1)
 
     # def render_results(self, courses):
     #     for course in courses:
