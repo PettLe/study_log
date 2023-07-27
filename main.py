@@ -37,12 +37,8 @@ class App(customtkinter.CTk):
         self.tab_view = TabView(master=self)
         self.tab_view.pack(fill="both", expand=True, padx=20, pady=20)
 
-        self.bind("<Button-1>", self.results_on_click)
-
     def results_on_click(self, event):
-        # self.tab_view.tab2.testi2()
         self.tab_view.tab2.render_tree("kaikki")
-        # print("Ababa")
 
 
 class TabView(customtkinter.CTkTabview):
@@ -59,12 +55,6 @@ class TabView(customtkinter.CTkTabview):
         self.tab2.pack(fill="both", expand=True, padx=0, pady=0)
         # self.button_1 = customtkinter.CTkButton(self.tab("Lisää kurssi"))
         # self.button_2 = customtkinter.CTkButton(self.tab("Näytä kaikki"))
-        # self.button_2.pack()
-        # self.tab2.bind("<Button-1>", self.tab2.testi2())
-        # self.tab2.testi2()
-
-    # def testi(self):
-    #     print("Ababa")
 
 
 class Tab1(customtkinter.CTkFrame):
@@ -120,8 +110,8 @@ class Tab1(customtkinter.CTkFrame):
         )
         self.saveBtn.grid(row=5, column=1, sticky="ew")
 
-        # master.master.tab2.testi2()
-        # print()
+        # Bind save button to an upper level class function, which re-renders page 2
+        self.saveBtn.bind("<Button-1>", self.master.master.master.results_on_click)
 
     def optionmenu_callback(self, choice):
         print("optionmenu dropdown clicked:", choice)
