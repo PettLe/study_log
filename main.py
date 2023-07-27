@@ -39,6 +39,7 @@ class App(customtkinter.CTk):
 
     def results_on_click(self, event):
         self.tab_view.tab2.render_tree("kaikki")
+        self.tab_view.tab2.optionmenu_callback("kaikki")
 
 
 class TabView(customtkinter.CTkTabview):
@@ -321,25 +322,9 @@ class Tab2(customtkinter.CTkFrame):
         # self.render_tree("kaikki")
 
         # CATEGORY PART DOESN'T WORK HERE CORRECTLY
-        self.osp_label.configure(
-            text=f"Opintopisteet: {self.fetch_osp() - deleted_osp} (yht. {self.fetch_osp() - deleted_osp})",
-        )
+        self.optionmenu_callback("kaikki")
 
     def render_tree(self, category):
-        # self.columns = ("course_name", "osp", "grade", "category")
-
-        # self.tree = ttk.Treeview(master=self, columns=self.columns, show="headings")
-        # self.tree.column("course_name", width=150, anchor=W)
-        # self.tree.column("osp", width=100, anchor=W)
-        # self.tree.column("grade", width=100, anchor=CENTER)
-        # self.tree.column("category", width=150, anchor=CENTER)
-
-        # # define headings
-        # self.tree.heading("course_name", text="Kurssin nimi")
-        # self.tree.heading("osp", text="Op.")
-        # self.tree.heading("grade", text="Arvosana")
-        # self.tree.heading("category", text="Kategoria")
-
         self.tree.delete(*self.tree.get_children())
         if category == "kaikki":
             for course in self.fetch_data():
@@ -364,13 +349,6 @@ class Tab2(customtkinter.CTkFrame):
                     self.tree.insert("", END, values=temp)
                 else:
                     continue
-        # self.tree.bind("<<TreeviewSelect>>", self.item_selected)
-        # self.tree.grid(row=0, column=0, sticky="nsew")
-
-        # # add a scrollbar
-        # self.scrollbar = ttk.Scrollbar(self, orient=VERTICAL, command=self.tree.yview)
-        # self.tree.configure(yscroll=self.scrollbar.set)
-        # self.scrollbar.grid(row=0, column=1, sticky="ns")
 
     def item_selected(self, event):
         for selected_item in self.tree.selection():
@@ -433,8 +411,6 @@ class Tab2(customtkinter.CTkFrame):
 
     # self.render_results(self.fetch_data())
 
-
-# render_results(fetch_saved_data())
 
 app = App()
 app.mainloop()
