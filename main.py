@@ -54,8 +54,6 @@ class TabView(customtkinter.CTkTabview):
 
         self.tab2 = Tab2(master=self.tab("Näytä kaikki"))
         self.tab2.pack(fill="both", expand=True, padx=0, pady=0)
-        # self.button_1 = customtkinter.CTkButton(self.tab("Lisää kurssi"))
-        # self.button_2 = customtkinter.CTkButton(self.tab("Näytä kaikki"))
 
 
 class Tab1(customtkinter.CTkFrame):
@@ -81,23 +79,25 @@ class Tab1(customtkinter.CTkFrame):
         self.arvosana_input.grid(row=2, column=1, sticky="ew", pady=5, columnspan=2)
 
         self.options = [
-            "väkivaltatutkimus",
-            "sukupuolentutkimus",
             "digimarkkinointi",
-            "vastuullisuus & kestävä kehitys",
-            "tilastotiede",
+            "sosiologia",
+            "sukupuolentutkimus",
             "tekoäly",
+            "tilastotiede",
+            "vastuullisuus & kestävä kehitys",
+            "väkivaltatutkimus",
             "muu",
             "hylje-biologia",
             "juuston alkeet",
             "pönkö",
         ]
-        clicked = customtkinter.StringVar(value="väkivaltatutkimus")
-        clicked.set("väkivaltatutkimus")
+        clicked = customtkinter.StringVar(value="digimarkkinointi")
+        clicked.set("digimarkkinointi")
 
         self.kategoria_input = customtkinter.CTkOptionMenu(
             self, values=self.options, command=self.optionmenu_callback
         )
+        self.kategoria_input.configure(width=300)
         self.muistiinpanot_input = customtkinter.CTkTextbox(self, height=100)
         self.muistiinpanot_input.grid(
             row=3, column=1, sticky="ew", pady=5, columnspan=2
@@ -114,7 +114,7 @@ class Tab1(customtkinter.CTkFrame):
         self.saveBtn.bind("<Button-1>", self.master.master.master.results_on_click)
 
     def optionmenu_callback(self, choice):
-        print("optionmenu dropdown clicked:", choice)
+        return
 
     def save_data(self):
         # Insert into table
@@ -155,19 +155,13 @@ class Tab1(customtkinter.CTkFrame):
         self.arvosana_input.delete(0, END)
         self.muistiinpanot_input.delete("0.0", END)
 
-    # conn.close()
-
 
 class Tab2(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.grid_columnconfigure((0, 1), weight=1)
-        # self.data = self.fetch_data()
         self.configure(fg_color="lightgrey")
-        # self.arvosana = self.fetch_grade()
         self.arvosanat_lasketut = 0
-        # self.osp = self.fetch_osp()
-        # self.op_category = self.fetch_osp()
 
         self.columns = ("course_name", "osp", "grade", "category")
 
@@ -188,8 +182,6 @@ class Tab2(customtkinter.CTkFrame):
 
         self.tree.bind("<<TreeviewSelect>>", self.item_selected)
         self.tree.grid(row=0, column=0, sticky="nsew")
-
-        # print(self.tree)
 
         # # add a scrollbar
         self.scrollbar = ttk.Scrollbar(self, orient=VERTICAL, command=self.tree.yview)
@@ -219,21 +211,20 @@ class Tab2(customtkinter.CTkFrame):
 
         self.deleteBtn.grid(row=0, column=0, sticky="ew", pady=(5, 2))
         self.deleteBtn.bind("<Button-1>", self.delete_course)
-        # self.tree.bind("<<TreeviewSelect>>", self.delete_course)
 
         self.courseNotesBox = customtkinter.CTkTextbox(self.controlFrame, height=100)
         self.courseNotesBox.grid(row=3, column=0, sticky="ew", pady=(5, 2))
-        # self.courseNotesBox.insert("0.0", notesData[0][0])
 
         # Sorting
         self.options = [
             "kaikki",
-            "väkivaltatutkimus",
-            "sukupuolentutkimus",
             "digimarkkinointi",
-            "vastuullisuus & kestävä kehitys",
-            "tilastotiede",
+            "sosiologia",
+            "sukupuolentutkimus",
             "tekoäly",
+            "tilastotiede",
+            "vastuullisuus & kestävä kehitys",
+            "väkivaltatutkimus",
             "muu",
             "hylje-biologia",
             "juuston alkeet",
@@ -242,14 +233,14 @@ class Tab2(customtkinter.CTkFrame):
         self.clicked = customtkinter.StringVar(value="kaikki")
 
         # Find the size of the longest word in optionMenu and use it as width to stop widget from resizing
-        self.menu_width = len(max(self.options, key=len))
+        # self.menu_width = len(max(self.options, key=len))
 
         self.lajittelu_input = customtkinter.CTkOptionMenu(
             self.controlFrame, values=self.options, command=self.optionmenu_callback
         )
-        self.lajittelu_input.configure(width=self.menu_width)
+        self.lajittelu_input.configure(width=300)
         self.lajittelu_input.grid(
-            row=0, column=2, sticky="ew", pady=(5, 2), columnspan=2
+            row=0, column=1, sticky="w", pady=(5, 2), padx=(15, 15), columnspan=3
         )
 
         self.updateBtn = customtkinter.CTkButton(self.controlFrame, text="Päivitä")
@@ -300,29 +291,28 @@ class Tab2(customtkinter.CTkFrame):
                 grades.append(int(grade[0]))
             except:
                 continue
-        return round(sum(grades) / len(grades), 1)
+        try:
+            return round(sum(grades) / len(grades), 1)
+        except:
+            return 0
 
     def delete_course(self, event):
-        deleted_osp = 0
-        for selected_item in self.tree.selection():
-            item = self.tree.item(selected_item)
-            record = item["values"]
-            c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
-            data = c.fetchall()
-            deleted_osp = data[0][1]
+        try:
+            for selected_item in self.tree.selection():
+                item = self.tree.item(selected_item)
+                record = item["values"]
+                c.execute(f"SELECT *, oid FROM courses WHERE oid = {record[4]}")
+                data = c.fetchall()
 
-            # SQL command to delete based on oid. Then update
-        c.execute(f"DELETE FROM courses WHERE oid = {data[0][4]}")
-        conn.commit()
-        c.execute(f"DELETE FROM notes WHERE course_id = {data[0][4]}")
-        conn.commit()
+                # SQL command to delete based on oid. Then update
+            c.execute(f"DELETE FROM courses WHERE oid = {data[0][4]}")
+            conn.commit()
+            c.execute(f"DELETE FROM notes WHERE course_id = {data[0][4]}")
+            conn.commit()
 
-        # RENDER EITHER ALL OR SPECIFIC CHOICE HMMM
-        self.render_tree(data[0][3])
-        # self.render_tree("kaikki")
-
-        # CATEGORY PART DOESN'T WORK HERE CORRECTLY
-        self.optionmenu_callback("kaikki")
+            self.optionmenu_callback("kaikki")
+        except:
+            return
 
     def render_tree(self, category):
         self.tree.delete(*self.tree.get_children())
@@ -371,7 +361,6 @@ class Tab2(customtkinter.CTkFrame):
 
     # Identify UPDATE call and send data forward to be updated in table
     def updateNotes(self, event):
-        # print(event)
         for selected_item in self.tree.selection():
             item = self.tree.item(selected_item)
             record = item["values"]
@@ -395,21 +384,6 @@ class Tab2(customtkinter.CTkFrame):
                     {"new_note": newNote, "notes_id": record[4]},
                 )
                 conn.commit()
-
-    # def render_results(self, courses):
-    #     for course in courses:
-    #         try:
-    #             self.arvosana += int(course[2])
-    #             self.arvosanat_lasketut += 1
-    #         except:
-    #             continue
-    #     if self.arvosana == 0:
-    #         self.arvosana = str("-----")
-    #     else:
-    #         self.arvosana = self.arvosana / self.arvosanat_lasketut
-    #         self.arvosana = round(self.arvosana, 1)
-
-    # self.render_results(self.fetch_data())
 
 
 app = App()
