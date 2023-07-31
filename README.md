@@ -8,4 +8,5 @@ Attempt to branch out technology-wise instead of doing everything from the web d
 - Tkinter
 - Customtkinter
 - SQLite3
+- Virtual Enviroment
 - PyInstaller

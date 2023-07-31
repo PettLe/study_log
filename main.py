@@ -2,9 +2,14 @@ from tkinter import *
 from tkinter import ttk
 import customtkinter
 import sqlite3
+import os
+import sys
+
+...
+appdir = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
 
 # Establish db connection or create new
-conn = sqlite3.connect("course_data.db")
+conn = sqlite3.connect(os.path.join(appdir, "course_data.db"))
 
 # create cursor
 c = conn.cursor()
