@@ -9,22 +9,24 @@ conn = sqlite3.connect("course_data.db")
 # create cursor
 c = conn.cursor()
 
-c.execute(
-    """
-          CREATE TABLE courses (
-              name TEXT,
-              osp INTEGER,
-              grade TEXT,
-              category TEXT
-          )
-          """
-)
 
-c.execute(
+def create_db():
+    c.execute(
+        """
+            CREATE TABLE IF NOT EXISTS courses (
+                name TEXT,
+                osp INTEGER,
+                grade TEXT,
+                category TEXT
+            )
+            """
+    )
+
+    c.execute(
+        """
+    CREATE TABLE IF NOT EXISTS notes (
+        course_id INTEGER,
+        note TEXT
+    )
     """
-CREATE TABLE notes (
-    course_id INTEGER,
-    note TEXT
-)
-"""
-)
+    )

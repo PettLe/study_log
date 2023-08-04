@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from initiate_database import create_db
 import customtkinter
 import sqlite3
 import os
@@ -13,6 +14,7 @@ conn = sqlite3.connect(os.path.join(appdir, "course_data.db"))
 
 # create cursor
 c = conn.cursor()
+create_db()
 
 # If need to clear widgets from overall:
 # for child in tab2.grid_slaves():
